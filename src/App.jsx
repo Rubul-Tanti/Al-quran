@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Header from './components/landingpage/header'
-import Hero from './components/landingpage/Hero'
+import Hero from './components/landingpage/hero'
 import Stats from './components/landingpage/stats'
 import EasyToStart from './components/landingpage/easyToStart'
 import Features from './components/landingpage/features'

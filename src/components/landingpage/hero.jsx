@@ -1,4 +1,4 @@
-// components/Hero.tsx
+
 
 const Hero = () => {
   return (
