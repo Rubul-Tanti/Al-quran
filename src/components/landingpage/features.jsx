@@ -13,47 +13,47 @@ import {
 
 const features = [
   {
-    icon: <FaVideo className="text-pink-900 text-3xl" />,
+    icon: <FaVideo className="text-blue-900 text-3xl" />,
     title: '1-to-1 Video Call',
     desc: 'Learn or teach through high-quality, real-time video sessions.',
   },
   {
-    icon: <FaComments className="text-pink-900 text-3xl" />,
+    icon: <FaComments className="text-blue-900 text-3xl" />,
     title: 'Live Chat',
     desc: 'Instant messaging between students and teachers.',
   },
   {
-    icon: <FaSearch className="text-pink-900 text-3xl" />,
+    icon: <FaSearch className="text-blue-900 text-3xl" />,
     title: 'Search Teachers',
     desc: 'Find qualified Quran teachers easily by skill, language, or price.',
   },
   {
-    icon: <FaFilter className="text-pink-900 text-3xl" />,
+    icon: <FaFilter className="text-blue-900 text-3xl" />,
     title: 'Advanced Filters',
     desc: 'Filter by availability, level, gender, or teaching method.',
   },
   {
-    icon: <FaCalendarAlt className="text-pink-900 text-3xl" />,
+    icon: <FaCalendarAlt className="text-blue-900 text-3xl" />,
     title: 'Schedule Classes',
     desc: 'Teachers can set class times and manage availability.',
   },
   {
-    icon: <FaBell className="text-pink-900 text-3xl" />,
+    icon: <FaBell className="text-blue-900 text-3xl" />,
     title: 'Reminders & Alerts',
     desc: 'Get notified before every class or activity.',
   },
   {
-    icon: <FaChartLine className="text-pink-900 text-3xl" />,
+    icon: <FaChartLine className="text-blue-900 text-3xl" />,
     title: 'Progress Tracking',
     desc: 'Students & teachers can monitor Quran memorization or tajweed.',
   },
   {
-    icon: <FaUserCircle className="text-pink-900 text-3xl" />,
+    icon: <FaUserCircle className="text-blue-900 text-3xl" />,
     title: 'Teacher Profiles & Reviews',
     desc: 'View reviews, experience, and credentials of each teacher.',
   },
   {
-    icon: <FaClock className="text-pink-900 text-3xl" />,
+    icon: <FaClock className="text-blue-900 text-3xl" />,
     title: '24/7 Flexibility',
     desc: 'Take or give classes at your convenience, from anywhere.',
   },
@@ -75,7 +75,7 @@ const Features = () => {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="bg-teal-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition"
+            className="bg-blue-50 p-6 rounded-2xl shadow-sm hover:shadow-md transition"
           >
             <div className="mb-4">{feature.icon}</div>
             <h4 className="text-xl font-semibold text-gray-800 mb-2">
