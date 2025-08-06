@@ -1,27 +1,21 @@
 import { useState } from 'react'
-import Header from './components/landingpage/header'
-import Hero from './components/landingpage/hero'
-import Stats from './components/landingpage/stats'
-import EasyToStart from './components/landingpage/easyToStart'
-import Features from './components/landingpage/features'
-import AppPromo from './components/landingpage/appPromo'
-import ContactUs from './components/landingpage/contactus'
-import Footer from './components/landingpage/footer'
+import { Route, Routes } from 'react-router-dom'
+import LandingpageLayout from './pages/landingpage/layout'
+import HomePage from './pages/landingpage/home'
+import OurCourses from './pages/landingpage/our-courses'
+import SubscriptionsPlan from './pages/landingpage/subscriptionPlans'
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
-    <>
-      <Header/>
-      <Hero/>
-      <Stats/>
-      <AppPromo/>
-      <EasyToStart/>
-      <Features/>
-      <ContactUs/>
-      <Footer/>
-    </>
+    <Routes>
+      <Route path='/' element={<LandingpageLayout/>}>
+      <Route path="/" element={<HomePage/>} />
+      <Route path="/our-course" element={<OurCourses/>} />
+      <Route path="/subscription-plans" element={<SubscriptionsPlan/>} />
+      </Route>
+    </Routes>
   )
 }
 

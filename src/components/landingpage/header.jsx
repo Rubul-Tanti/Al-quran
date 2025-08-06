@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-const nav = [{ route: "/our-course", name: "Our Courses" }, { name: "Subcription Plans", route: "/subscription-plans" }, { name: "Blog", route: "/blog" }]
+const nav = [,{name:"Home",route:"/"},{ route: "/our-course", name: "Our Courses" }, { name: "Subcription Plans", route: "/subscription-plans" }, { name: "Blog", route: "/blog" }]
 const Header = () => {
   const { pathname } = useLocation()
   return (
@@ -8,7 +8,7 @@ const Header = () => {
         <img src="/logo.svg" alt="Logo" className="h-8" />
       </div>
       <ul className="hidden md:flex gap-6 text-sm font-medium text-gray-700">
-        {nav.map((route) => { return <Link to={route.route}> <li key={route.name} className={`hover:text-blue-500 cursor-pointer ${pathname === route.route ? "text-blue-600 underline" : "text-black"}`}>  {route.name}</li> </Link> })}
+        {nav.map((route) => { return <Link to={route.route} key={route.name}> <li key={route.name} className={`hover:text-blue-500 cursor-pointer outline-0 ${pathname === route.route ? "text-blue-600 underline" : "text-black"}`}>  {route.name}</li> </Link> })}
       </ul>
       <div className="flex gap-4">
         <button className="border border-blue-500 text-blue-500 px-4 py-1.5 rounded-full hover:bg-blue-50">Log in</button>
