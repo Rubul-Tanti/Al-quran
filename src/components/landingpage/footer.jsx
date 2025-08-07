@@ -1,18 +1,12 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
-
+import webLogo from "../../../public/webLogo.png"
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-br from-blue-50 to-blue-100 text-blue-900 py-10 px-6 md:px-12 lg:px-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo & Security */}
         <div>
-          <h2 className="text-2xl font-bold mb-2">Qutor</h2>
-          <p className="text-sm mb-4">Is secured by:</p>
-          <img
-            src="https://www.ssltrust.com.au/assets/images/seals/positivessl_trust_seal_lg_2022.png"
-            alt="SSL Secure"
-            className="w-32"
-          />
+          <img src={webLogo} alt="weblogo" className="h-6 md:h-10"/>
         </div>
 
         {/* Company Info */}
