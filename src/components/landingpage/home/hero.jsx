@@ -1,4 +1,4 @@
-
+import heroImage from "../../../assets/images/landingpage/hero.png"
 
 const Hero = () => {
   return (
@@ -28,7 +28,7 @@ const Hero = () => {
         {/* Right Image */}
         <div className="flex-1">
           <img
-            src="/quran-illustration.svg"
+            src={heroImage}
             alt="Learn Quran Online"
             className="w-full max-w-md mx-auto"
           />

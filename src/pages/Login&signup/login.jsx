@@ -1,63 +1,87 @@
 import React from "react";
-import { FcGoogle } from "react-icons/fc"; // Google icon
+import loginImage from "../../assets/images/loginimage.png";
+import { FcGoogle } from "react-icons/fc";
+import webLogo from "../../../public/webLogo.png";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const handleGoogleLogin = () => {
-    // Call your OAuth logic here (e.g., Firebase, NextAuth, etc.)
     console.log("Login with Google clicked");
   };
 
   return (
-    <div className="flex relative flex-row-reverse w-full h-screen">
-      {/* Left Side Image */}
-       <img alt="logo" className="absolute left-14 top-14" />
-      <div className="w-[65%] flex justify-center bg-blue-900 items-center">
-        <img src="/login-illustration.png" alt="Login Illustration" /> {/* Replace with actual image path */}
+    <div className="flex flex-col overflow-hidden h-screen md:flex-row-reverse w-full min-h-screen">
+      {/* Logo */}
+      <img
+        alt="logo"
+        src={webLogo}
+        className="absolute top-4 left-4 md:top-2 md:left-2 md:h-10  h-8 drop-shadow-lg z-10"
+      />
+
+      {/* Left Side (Branding Section) */}
+      <div className="flex flex-col justify-center items-center w-full md:w-2/3 bg-blue-900 text-white px-6 py-8 pb-0 md:py-0 min-h-[50vh] md:min-h-screen">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center leading-snug max-w-lg">
+          Revolutionize Learning Quran with{" "}
+          <span className="text-yellow-300">Qtuor</span>
+        </h1>
+        <p className="mt-3 text-sm sm:text-base text-gray-200 text-center max-w-md">
+          Learn or Teach the Quran online for kids & adults from the comfort of
+          your home.
+        </p>
+        <img
+          src={loginImage}
+          alt="Login Illustration"
+          className="max-w-[180px] sm:max-w-[240px] md:max-w-[300px]  drop-shadow-2xl  w-full"
+        />
       </div>
 
-      {/* Right Side Login Form */}
-      <div className="flex justify-center items-center w-[35%]">
-        <div className="flex flex-col items-start gap-2 h-full justify-center w-full px-8">
-          <h1 className="text-4xl font-bold">Welcome Back</h1>
-          <p className="text-sm text-gray-500 font-sans w-full">
-            Please login to your account
-          </p>
+      {/* Right Side (Login Form Section) */}
+      <div className="flex justify-center items-center w-full md:w-1/3 bg-white p-6 sm:p-8 shadow-lg min-h-[50vh] md:min-h-screen mt-5 overflow-hidden">
+        <div className="flex flex-col items-start gap-4 w-full max-w-sm">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            Welcome Back
+          </h1>
+          <p className="text-sm text-gray-500">Please login to your account</p>
 
           <input
             type="email"
             placeholder="Email"
-            className="w-full mt-8 bg-gray-50 rounded-lg h-10 pl-5 outline-0 border border-zinc-200"
+            className="w-full mt-4 bg-gray-50 rounded-lg h-11 pl-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
           />
           <input
             type="password"
             placeholder="Password"
-            className="w-full mt-3 bg-gray-50 rounded-lg h-10 pl-5 outline-0 border border-zinc-200"
+            className="w-full bg-gray-50 rounded-lg h-11 pl-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
           />
 
-          <div className="flex flex-row justify-end w-full">
-            <a className="text-[12px] text-gray-600 cursor-pointer">Forgot password?</a>
-          </div>
-
-          <div className="w-full flex justify-center">
-            <button className="rounded-xl w-full border py-3 cursor-pointer bg-blue-900 text-white font-semibold">
-              Login
+          <div className="flex justify-end w-full">
+            <button className="text-xs sm:text-sm text-blue-600 hover:underline cursor-pointer">
+              Forgot password?
             </button>
           </div>
 
-          {/* Google Login */}
-          <div className="w-full mt-4 flex justify-center">
-            <button
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-xl hover:bg-gray-50 transition"
-            >
-              <FcGoogle size={20} />
-              <span className="text-sm font-medium text-gray-700">Login with Google</span>
-            </button>
-          </div>
+          <button className="w-full py-3 rounded-lg bg-blue-900 hover:bg-blue-800 transition text-white font-semibold text-sm sm:text-base">
+            Login
+          </button>
 
-          <p className="text-[12px] mt-4">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition"
+          >
+            <FcGoogle size={20} />
+            <span className="text-sm font-medium text-gray-700">
+              Login with Google
+            </span>
+          </button>
+
+          <p className="text-xs sm:text-sm mt-4 text-gray-500 text-center w-full">
             Don't have an account?
-            <a className="pl-1 text-blue-700 cursor-pointer">Get started</a>
+            <Link
+              to="/signup/role-selection"
+              className="pl-1 text-blue-600 hover:underline cursor-pointer"
+            >
+              Get started
+            </Link>
           </p>
         </div>
       </div>
@@ -66,3 +90,4 @@ const Login = () => {
 };
 
 export default Login;
+
