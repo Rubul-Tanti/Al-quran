@@ -15,7 +15,7 @@ const Login = () => {
       <img
         alt="logo"
         src={webLogo}
-        className="absolute top-4 left-4 md:top-2 md:left-2 md:h-10  h-8 drop-shadow-lg z-10"
+        className="absolute top-4 left-4 md:top-4 md:left-6 md:h-10  h-8 drop-shadow-lg z-10"
       />
 
       {/* Left Side (Branding Section) */}
