@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 import webLogo from "../../../public/webLogo.png"
-const nav = [,{name:"Home",route:"/"},{ route: "/our-course", name: "Our Courses" }, { name: "Subcription Plans", route: "/subscription-plans" }]
+const nav = [{name:"studentdashboard",route:"/student/dashboard"},{name:"Home",route:"/"},{ route: "/our-course", name: "Our Courses" }, { name: "Subcription Plans", route: "/subscription-plans" }]
 const Header = () => {
   const { pathname } = useLocation()
   return (
