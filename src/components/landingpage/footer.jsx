@@ -54,7 +54,7 @@ const Footer = () => {
           </div>
 
           <div className="mt-5">
-            <p className="font-semibold text-sm mb-2">Download Qutor App</p>
+            <p className="font-semibold text-sm mb-2">Download Qtuor App</p>
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/512px-Google_Play_Store_badge_EN.svg.png"
               alt="Get it on Google Play"
@@ -66,7 +66,7 @@ const Footer = () => {
 
       {/* Bottom Text */}
       <div className="text-center mt-10 text-xs text-blue-700">
-        © {new Date().getFullYear()} Qutor. All rights reserved.
+        © {new Date().getFullYear()} Qtuor. All rights reserved.
       </div>
     </footer>
   );

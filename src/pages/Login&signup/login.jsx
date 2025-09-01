@@ -1,14 +1,48 @@
 import React from "react";
 import loginImage from "../../assets/images/loginimage.png";
 import { FcGoogle } from "react-icons/fc";
+import  { loginSuccess } from "../../Redux/slices/authSlice"
+  import { ToastContainer, toast } from 'react-toastify';
 import webLogo from "../../../public/webLogo.png";
 import { Link } from "react-router-dom";
-
+import { useState,useRef } from "react";
+import login from "../../services/login";
+import { useDispatch } from "react-redux";
+import Loader from "../../components/loader";
 const Login = () => {
-  const handleGoogleLogin = () => {
-    console.log("Login with Google clicked");
-  };
+  const [loading,setLoading]=useState(false)
+  const dispatch=useDispatch()
+const emailRef = useRef(null);
+const passwordRef = useRef(null);
 
+const handleonSubmit = async(e) => {
+  e.preventDefault(); 
+  try{
+    setLoading(true)
+  const email = emailRef.current.value;
+  const password = passwordRef.current.value;
+  if (!email || !password) {
+    toast("Please fill in all fields");
+    return;
+  }
+const data=await login(email, password);
+
+if(data.success){
+  toast("Login Successfull")
+  dispatch(loginSuccess(data))
+}
+setLoading(false)
+  }catch(e){
+    setLoading(false)
+    const data=e.response.data;
+  if(!data.success){toast(data.message)
+    toast(data.message)
+  }else{
+    setError("An error occurred during login. Please try again.");
+    toast("An error occurred during login. Please try again.")
+  }
+  console.error("Login error:", e);
+}}
   return (
     <div className="flex flex-col overflow-hidden h-screen md:flex-row-reverse w-full min-h-screen">
       {/* Logo */}
@@ -35,7 +69,6 @@ const Login = () => {
         />
       </div>
 
-      {/* Right Side (Login Form Section) */}
       <div className="flex justify-center items-center w-full md:w-1/3 bg-white p-6 sm:p-8 shadow-lg min-h-[50vh] md:min-h-screen mt-5 overflow-hidden">
         <div className="flex flex-col items-start gap-4 w-full max-w-sm">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
@@ -44,11 +77,13 @@ const Login = () => {
           <p className="text-sm text-gray-500">Please login to your account</p>
 
           <input
+          ref={emailRef}
             type="email"
             placeholder="Email"
             className="w-full mt-4 bg-gray-50 rounded-lg h-11 pl-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
           />
           <input
+          ref={passwordRef}
             type="password"
             placeholder="Password"
             className="w-full bg-gray-50 rounded-lg h-11 pl-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
@@ -60,27 +95,16 @@ const Login = () => {
             </button>
           </div>
 
-          <button className="w-full py-3 rounded-lg bg-blue-900 hover:bg-blue-800 transition text-white font-semibold text-sm sm:text-base">
-            Login
-          </button>
-
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition"
-          >
-            <FcGoogle size={20} />
-            <span className="text-sm font-medium text-gray-700">
-              Login with Google
-            </span>
+          <button onClick={handleonSubmit} className="w-full py-3 rounded-lg bg-blue-900 hover:bg-blue-800 transition text-white font-semibold text-sm sm:text-base">
+                {loading?<Loader variant="button" size="small" />:"Login"}
           </button>
 
           <p className="text-xs sm:text-sm mt-4 text-gray-500 text-center w-full">
             Don't have an account?
             <Link
               to="/signup/role-selection"
-              className="pl-1 text-blue-600 hover:underline cursor-pointer"
-            >
-              Get started
+              className="pl-1 text-blue-600 hover:underline cursor-pointer">
+            Get started              
             </Link>
           </p>
         </div>

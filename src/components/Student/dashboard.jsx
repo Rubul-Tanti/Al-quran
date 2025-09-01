@@ -2,7 +2,10 @@ import React from "react";
 import { FiMessageSquare, FiStar } from "react-icons/fi";
 import { BsCheckCircle } from "react-icons/bs";
 import { FaBookOpen, FaClock, FaAward } from "react-icons/fa";
-
+import { useSelector } from "react-redux";
+import { FaBookQuran } from "react-icons/fa6";
+import { SiConcourse } from "react-icons/si";
+import { GiFinishLine } from "react-icons/gi";
 const StudentDashboard = () => {
   const ongoingCourses = [
     {
@@ -46,12 +49,13 @@ const StudentDashboard = () => {
       img: "https://via.placeholder.com/60"
     }
   ];
-
+    
+  const user=useSelector((state)=>state.auth.user)
   return (
     <div className="p-6 bg-zinc-50 min-h-screen text-blue-900 w-full space-y-8">
-      <h1 className="text-2xl font-bold">📖 Quran Learning Dashboard</h1>
+      <h1 className="text-2xl font-bold"> Quran Learning Dashboard</h1>
 
-      {/* Stats Section */}
+      {/* Stats Section
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-2xl shadow flex items-center gap-4">
           <FaBookOpen className="text-blue-900 text-3xl" />
@@ -74,13 +78,13 @@ const StudentDashboard = () => {
             <p className="text-sm text-gray-500">Achievements</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Today's Classes Section */}
       <div className="bg-white p-4 rounded-2xl shadow">
-        <h2 className="text-lg font-semibold mb-4">📅 Today’s Classes</h2>
+        <h2 className="text-lg flex items-center gap-2 font-semibold mb-4"><FaBookQuran size={18}/> Today’s Classes</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {todaysClasses.map((cls) => (
+          {user.ongoingCourses.map((cls) => (
             <div
               key={cls.id}
               className="bg-neutral-100 relative p-4 rounded-xl flex flex-row items-center justify-center text-center shadow-sm"
@@ -96,16 +100,17 @@ const StudentDashboard = () => {
               <p className="mt-2 text-sm font-semibold absolute right-2 top-0 text-blue-900">{cls.time}</p>
             </div>
           ))}
+          {!user.ongoingCourses.length>0&&<p>NO Classes</p>}
         </div>
       </div>
 
       {/* Ongoing Courses */}
       <div className="bg-white p-4 rounded-2xl shadow">
-        <h2 className="text-lg font-semibold mb-4">Ongoing Quran Courses</h2>
+        <h2 className="text-lg font-semibold flex gap-2 items-center mb-4"> <SiConcourse size={24} />Ongoing  Courses</h2>
         <div className="space-y-4">
-          {ongoingCourses.map((course) => (
+          {user.ongoingCourses.map((course,i) => (
             <div
-              key={course.id}
+              key={i}
               className="border border-zinc-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between gap-4"
             >
               <div className="flex-1">
@@ -142,13 +147,14 @@ const StudentDashboard = () => {
               </div>
             </div>
           ))}
+          {!user.ongoingCourses.length>0&&<p>No Ongoing Course</p>}
         </div>
       </div>
 
       {/* Completed Courses */}
       <div className="bg-white p-4 rounded-2xl shadow">
-        <h2 className="text-lg font-semibold mb-4">Completed Quran Courses</h2>
-        {completedCourses.map((course) => (
+        <h2 className="text-lg font-semibold mb-4 flex gap-2 items-center"><GiFinishLine size={24}/> Completed  Courses</h2>
+        {user?.completedCourse?.map((course) => (
           <div
             key={course.id}
             className="border p-3 rounded-xl mb-3 flex justify-between items-center"
@@ -162,6 +168,7 @@ const StudentDashboard = () => {
             <BsCheckCircle className="text-green-500" size={20} />
           </div>
         ))}
+        {user.completedCourse.length===0&&<p>No Course Completed</p>}
       </div>
     </div>
   );

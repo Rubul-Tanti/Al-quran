@@ -3,7 +3,7 @@ import Header from '../../components/Student/header'
 import Sidebar from '../../components/Student/sidebar'
 import { Outlet } from 'react-router-dom'
 
-const Student = () => {
+const Layoutpage = () => {
   return (
     <div className="h-max">
       <Header />
@@ -18,4 +18,4 @@ const Student = () => {
 };
 
 
-export default Student
+export default Layoutpage
