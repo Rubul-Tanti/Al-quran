@@ -6,6 +6,9 @@ import { useSelector } from "react-redux";
 import { FaBookQuran } from "react-icons/fa6";
 import { SiConcourse } from "react-icons/si";
 import { GiFinishLine } from "react-icons/gi";
+import { useQuery } from "@tanstack/react-query";
+import fetchUser from "../../services/fetchUser";
+import Loader from "../loader";
 const StudentDashboard = () => {
   const ongoingCourses = [
     {
@@ -84,7 +87,7 @@ const StudentDashboard = () => {
       <div className="bg-white p-4 rounded-2xl shadow">
         <h2 className="text-lg flex items-center gap-2 font-semibold mb-4"><FaBookQuran size={18}/> Today’s Classes</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {user.ongoingCourses.map((cls) => (
+          {user?.ongoingCourses?.map((cls) => (
             <div
               key={cls.id}
               className="bg-neutral-100 relative p-4 rounded-xl flex flex-row items-center justify-center text-center shadow-sm"
@@ -100,7 +103,7 @@ const StudentDashboard = () => {
               <p className="mt-2 text-sm font-semibold absolute right-2 top-0 text-blue-900">{cls.time}</p>
             </div>
           ))}
-          {!user.ongoingCourses.length>0&&<p>NO Classes</p>}
+          {!user?.ongoingCourses?.length>0&&<p>NO Classes</p>}
         </div>
       </div>
 
@@ -108,7 +111,7 @@ const StudentDashboard = () => {
       <div className="bg-white p-4 rounded-2xl shadow">
         <h2 className="text-lg font-semibold flex gap-2 items-center mb-4"> <SiConcourse size={24} />Ongoing  Courses</h2>
         <div className="space-y-4">
-          {user.ongoingCourses.map((course,i) => (
+          {user?.ongoingCourses?.map((course,i) => (
             <div
               key={i}
               className="border border-zinc-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between gap-4"
@@ -147,7 +150,7 @@ const StudentDashboard = () => {
               </div>
             </div>
           ))}
-          {!user.ongoingCourses.length>0&&<p>No Ongoing Course</p>}
+          {!user?.ongoingCourses?.length>0&&<p>No Ongoing Course</p>}
         </div>
       </div>
 
@@ -168,7 +171,7 @@ const StudentDashboard = () => {
             <BsCheckCircle className="text-green-500" size={20} />
           </div>
         ))}
-        {user.completedCourse.length===0&&<p>No Course Completed</p>}
+        {user?.completedCourse?.length===0&&<p>No Course Completed</p>}
       </div>
     </div>
   );
