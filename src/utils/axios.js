@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://al-kuran-backend-2.onrender.com/user", // change to your backend URL
+  baseURL: "http://localhost:8000/user", // change to your backend URL
   withCredentials: true, // if you are using cookies
   headers: {
     "Content-Type": "application/json",

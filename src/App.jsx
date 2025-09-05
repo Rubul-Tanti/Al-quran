@@ -21,6 +21,7 @@ import DashboardLaout from "./components/dashboardLaout";
 import MyPosts from "./components/jobPost/postPage";
 import CreatePost from "./components/jobPost/createpost";
 import CourseList from "./components/teacher/findStudents";
+import TeacherDetails from "./components/Student/teacherDetails";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route  element={<Layoutpage />}>
             <Route path="dashboard" element={<DashboardLaout/>} />
             <Route path="find-teachers" element={<FindTeachers />} />
+            <Route path="find-teachers/:id" element={<TeacherDetails />} />
             <Route path="messages" element={<Chat />} />
           <Route path="/jobpost" element={<MyPosts/>}/>
           <Route path="/create-job" element={<CreatePost/>}/>
