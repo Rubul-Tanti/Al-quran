@@ -5,15 +5,13 @@ import api from "../../utils/axios";
 const TeacherDetails = () => {
   const { id } = useParams();
 
-const asyncTeacherDetails = async () => {
-    const res = await api.get("/v1/teacherlist?page=1&limit=10")
-    
-    
-}
-asyncTeacherDetails()
+  const asyncTeacherDetails = async () => {
+    const res = await api.get(`/v1/teacherDetails/id`);
+    console.log(res);
+  };
+  asyncTeacherDetails();
 
   return (
-    
     <div className="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       {/* Header Section */}
       <div className="flex items-center space-x-6 border-b pb-6">
