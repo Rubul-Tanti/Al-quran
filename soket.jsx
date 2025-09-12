@@ -7,10 +7,16 @@ const SocketContext = createContext(null);
 
 export const useSocket = () => useContext(SocketContext);
 
+// const URL =
+//   process.env.NODE_ENV === "production"
+//     ? undefined
+//     : "https://al-kuran-backend-2.onrender.com";
+
 const URL =
   process.env.NODE_ENV === "production"
     ? undefined
-    : "https://al-kuran-backend-2.onrender.com";
+    : "http://localhost:8000";
+
 
 export const SocketProvider = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -20,6 +26,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (isAuthenticated && user) {
       const newSocket = io(URL, {
+          transports: ["websocket"], // <--- IMPORTANT
+  withCredentials: true,
         auth: { userId: user._id, role: user.role },
       });
 
