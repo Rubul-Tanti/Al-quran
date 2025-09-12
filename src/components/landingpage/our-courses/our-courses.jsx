@@ -2,6 +2,11 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import pic1 from "../../../assets/images/courses/1.png"
+import pic2 from "../../../assets/images/courses/2.png"
+import pic3 from "../../../assets/images/courses/3.jpeg"
+import pic4 from "../../../assets/images/courses/4.jpeg"
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,22 +14,22 @@ const courses = [
   {
     title: "Hifz Course",
     description: "Memorize the Quran step-by-step with expert tutors.",
-    image: "/images/hifz.png",
+    image:pic1,
   },
   {
     title: "Tajweed Course",
     description: "Master the rules of Tajweed and beautify your recitation.",
-    image: "/images/tajweed.png",
+    image:pic2,
   },
   {
     title: "Arabic Course",
     description: "Understand Quranic Arabic and explore its deep meanings.",
-    image: "/images/arabic.png",
+    image:pic3,
   },
   {
     title: "Noorani Qaida",
     description: "Learn to read Arabic with correct pronunciation from scratch.",
-    image: "/images/noorani.png",
+    image:pic4,
   },
 ];
 

@@ -36,12 +36,14 @@ setLoading(true)
       ...formData,
       name: user?.persnalDetails?.fullName || "",
       id: user?._id || "",
+      profilePic: user?.persnalDetails.profileImage|| "",
+      socketId: user?.socketId|| "",
     };
 
     console.log(finalData);
     const res= await api.post("/v1/createjob", finalData);
    if(res.data.success){
-    toast.success("create post successfully")
+    toast.success("created post successfully")
     navigate("/jobpost")
    }
     setFormData(defaultData);

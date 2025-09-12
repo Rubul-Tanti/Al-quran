@@ -45,6 +45,7 @@ e.preventDefault()
     const otpValue=otp.current.value
     const data=await verifyOtp({otp:otpValue,email:formData.email,fullName:formData.fullName,password:formData.password,gender:formData.gender})
     setLoading(false)
+    toast("student register successfully")
     if(data.success){
       navigate("/login")
     }

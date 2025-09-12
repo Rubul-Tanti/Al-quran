@@ -2,14 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { FiBookOpen, FiBookmark, FiClock } from "react-icons/fi";
 import api from "../../utils/axios";
 import Loader from "../loader";
+import { Link, useParams } from "react-router-dom";
 
 
 const CourseCard = ({ course }) => {
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition">
       {/* Header */}
       <div className="flex justify-between items-start">
-        <h2 className="text-lg font-semibold text-gray-800">{course.title}</h2>
+        <Link to={`page/${course._id}`}><h2 className="text-lg font-semibold text-gray-800 hover:underline hover:text-blue-700 cursor-pointer">{course.title}</h2></Link>
         <button className="text-gray-500 hover:text-blue-600">
           <FiBookmark size={20} />
         </button>
@@ -47,22 +49,32 @@ const CourseCard = ({ course }) => {
     </div>
   );
 };
-const fetchPosts=async()=>{
+const fetchPosts=async(page)=>{
+ const limit=20
+ const p=page?page:1
+ const skip=(p-1)*limit
     try{
-        const alljobs=await api.get("/v1/fetchjobs")
-        console.log(alljobs)
-        return alljobs.data 
+        const alljobs=await api.get(`/v1/fetchjobs/${skip}/${limit}`)
+        return alljobs.data.data 
     }
     catch(e){
         console.log(e)
     }
 }
 const CourseList = () => {
-    const {data,loading,error}=useQuery({queryKey:["jobPost"],queryFn:()=>fetchPosts()})
+    const {page}=useParams()
+    console.log(page)
+    const {data,loading,error}=useQuery({queryKey:["jobPost"],queryFn:()=>fetchPosts(page)})
     if(loading)return <Loader/>
     if(error)return<p>something went wrong</p>
     console.log(data)
 
+if (data?.allposts?.length === 0) 
+  return (
+    <div className="bg-white h-1/3  text-blue-900 p-4 rounded-md shadow-md text-center">
+      <div className="bg-gray-100 h-full w-full flex justify-center items-center font-semibold ">No jobs available</div>
+    </div>
+  );
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -86,7 +98,7 @@ const CourseList = () => {
 
       {/* Course cards */}
       <div className="space-y-4">
-        {data?.data?.map((course, idx) => (
+        {data?.allposts?.map((course, idx) => (
           <CourseCard key={idx} course={course} />
         ))}
       </div>

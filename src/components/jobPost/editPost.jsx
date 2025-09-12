@@ -1,24 +1,48 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import api from "../../utils/axios";
 import Loader from "../loader";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
+const fetchJobDetails=async(id)=>{
+    const res = await api.post(`/v1/fetchJobDetails/${id}`);
+      return res.data.data
+}
 
+const EditPost = () => {
+    const navigate = useNavigate();
 
+  const goBack = () => {
+    navigate(-1); // works like router.back()
+  };
+  const {id}=useParams()
+  const {data,isLoading,error}=useQuery({queryKey:["editjobDetails"],queryFn:()=>fetchJobDetails(id)})   
+     const [loading,setLoading]=useState(false)
+const [formData, setFormData] = useState({
+  id: "",
+  title: "",
+  description: "",
+  course: "",
+  language: "",
+  budget: "",
+});
 
-const EditPost = ({data,setEdit}) => {
-    console.log(data)
-    const defaultData = {
-    id:data._id,
-  title:data.title,
-  description:data.description,
-  course:data.course,
-  language:data.language,
-  budget:data.budget,
-};
-  const [formData, setFormData] = useState(defaultData);
-    const [loading,setLoading]=useState(false)
-  const user = useSelector((state) => state.auth.user);
+useEffect(() => {
+  if (data) {
+    setFormData({
+      id: data._id,
+      title: data.title,
+      description: data.description,
+      course: data.course,
+      language: data.language,
+      budget: data.budget,
+    });
+  }
+}, [data]);
+if(isLoading){return <Loader/>}
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,7 +59,7 @@ setLoading(true)
     const data=res.data
         if(data.success){
             toast("edited Post")
-        setEdit({page:false,data:""})
+            navigate(-1)
         }
     }catch(e){
     console.log(e)    
@@ -47,7 +71,8 @@ setLoading(true)
 
   return (
     <div className="bg-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mt-5">
+        <button onClick={()=>{goBack()}}><FaArrowLeft size={25}/></button>
         <h1 className="text-2xl font-bold text-blue-900 mb-6 text-center">
           Create Job Post
         </h1>

@@ -11,7 +11,7 @@ import Signup from "./pages/Login&signup/signup";
 import { ToastContainer } from "react-toastify";
 import StudentDashboard from "./components/Student/dashboard";
 import FindTeachers from "./components/Student/findteacher";
-import Chat from "./components/common/message";
+import Chat from "./components/common/message/message";
 import Settings from "./components/settings";
 import Layoutpage from "./pages/student/home";
 import TeacherDashboard from "./components/teacher/dashboard";
@@ -21,10 +21,41 @@ import DashboardLaout from "./components/dashboardLaout";
 import MyPosts from "./components/jobPost/postPage";
 import CreatePost from "./components/jobPost/createpost";
 import CourseList from "./components/teacher/findStudents";
+import JobDetails from "./components/teacher/jobDetails";
+import MyPostDetails from "./components/jobPost/mypostdetails";
+import EditPost from "./components/jobPost/editPost";
+import Message from "./components/common/message/chat";
+import TeacherDetails from "./components/Student/teacherDetails";
+import { useEffect } from "react";
+import {SocketProvider, useSocket } from "../soket";
+import { useSelector } from "react-redux";
 
 function App() {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const socket=useSocket()
+  useEffect(() => {
+    if (isAuthenticated && socket) {
+      console.log("✅ User authenticated, setting up socket...");
+
+      socket.on("connect", () => {
+        console.log("🟢 Socket connected:", socket.id);
+      });
+
+      socket.on("disconnect", () => {
+        console.log("🔴 Socket disconnected");
+      });
+
+      // cleanup listeners on unmount or auth change
+      return () => {
+        socket.off("connect");
+        socket.off("disconnect");
+      };
+    }
+  }, [isAuthenticated]); // runs whenever auth changes
+
   return (
     <>
+    <SocketProvider>
       <Routes>
         <Route element={<AuthGuard />}>
           {/* Public landing routes */}
@@ -38,28 +69,41 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />}>
             <Route path="/signup/role-selection" element={<RoleSelection />} />
-            <Route path="/signup/student-registration" element={<StudentRegistration />} />
-            <Route path="/signup/tutor-registration" element={<TutorRegisterForm />} />
+            <Route
+              path="/signup/student-registration"
+              element={<StudentRegistration />}
+            />
+            <Route
+              path="/signup/tutor-registration"
+              element={<TutorRegisterForm />}
+            />
           </Route>
 
-          {/* Protected routes */}
-          <Route  element={<Layoutpage />}>
-            <Route path="dashboard" element={<DashboardLaout/>} />
-            <Route path="find-teachers" element={<FindTeachers />} />
-            <Route path="messages" element={<Chat />} />
-          <Route path="/jobpost" element={<MyPosts/>}/>
-          <Route path="/create-job" element={<CreatePost/>}/>
-          <Route path="/find-students" element={<CourseList/>}/>
-          </Route>
-
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/videocall" element={<Videocall />} />
+          {/* Protected routes with SocketProvider */}
+            <Route element={<Layoutpage />}>
+              <Route path="dashboard" element={<DashboardLaout />} />
+              <Route path="find-teachers" element={<FindTeachers />} />
+              <Route path="find-teachers/:id" element={<TeacherDetails />} />
+              <Route path="messages" element={<Chat />}>
+                <Route path="/messages/:id" element={<Message />} />
+              </Route>
+              <Route path="/jobpost" element={<MyPosts />} />
+              <Route path="/jobpost/edit/:id" element={<EditPost />} />
+              <Route path="/jobpost/:id" element={<MyPostDetails />} />
+              <Route path="/create-job" element={<CreatePost />} />
+              <Route path="/jobs/:page" element={<CourseList />} />
+              <Route path="/jobs/page/" element={<CourseList />} />
+              <Route path="/jobs/page/:id" element={<JobDetails />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/videocall" element={<Videocall />} />
+              <Route path="/jobs" element={<CourseList />} />
+            </Route>
         </Route>
       </Routes>
       <ToastContainer />
+          </SocketProvider>
     </>
   );
 }
 
 export default App;
-

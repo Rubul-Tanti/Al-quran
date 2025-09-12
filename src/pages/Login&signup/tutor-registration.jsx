@@ -186,6 +186,7 @@ const otpHandler=async(e)=>{
   if(data.success){
     setOtpLoading(false)
     toast("tutor registor successfully")
+    toast.info("password has been sent to your email")
     navigate("/login")
   }else{
    setOtpLoading(false)

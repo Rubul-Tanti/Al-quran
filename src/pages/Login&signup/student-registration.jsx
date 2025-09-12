@@ -52,6 +52,7 @@ const [error,toast]=useState("")
     const data=await sendOtp(formData.email)
       if(data?.success){
         setotpsent(true)  
+        toast("otp sent to your email successfully")
       }}
       catch(e){
         setLoading(false)

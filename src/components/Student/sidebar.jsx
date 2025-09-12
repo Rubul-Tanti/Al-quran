@@ -14,15 +14,15 @@ export default function Sidebar({ open }) {
     { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
     { name: "Find Teachers", path: "/find-teachers", icon: <FiSearch /> },
     { name: "Messages", path: "/messages", icon: <FiMessageSquare /> },
-    { name: "Settings", path: "/settings", icon: <FiSettings /> },
-    { name: "Job Post", path: "/jobpost", icon: <FiSettings /> },
+    // { name: "Settings", path: "/settings", icon: <FiSettings /> },
+    { name: "MYPost", path: "/jobpost", icon: <FiSettings /> },
   ];
 
   const teacherMenu = [
     { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
-    { name: "Find Students", path: "/find-students", icon: <FiSearch /> },
+    { name: "Jobs", path: "/jobs", icon: <FiSearch /> },
     { name: "Messages", path: "/messages", icon: <FiMessageSquare /> },
-    { name: "Settings", path: "/settings", icon: <FiSettings /> },
+    // { name: "Settings", path: "/settings", icon: <FiSettings /> },
   ];
 
   const menuItems =user?.role==="student"?studentMenu:user?.role==="teacher"?teacherMenu:[]
@@ -34,7 +34,6 @@ export default function Sidebar({ open }) {
     localStorage.removeItem("accessToken");
       localStorage.clear();
   sessionStorage.clear();
-
     // Show success toast
     toast.success("Logged out successfully!", {
       position: "top-center",

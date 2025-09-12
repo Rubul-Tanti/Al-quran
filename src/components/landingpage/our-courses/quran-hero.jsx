@@ -1,31 +1,12 @@
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
-
+import Hero from "../../../assets/images/landingpage/hero2.png"
 export default function QuranHero() {
   return (
     <section>
-    <p className="pl-4 py-2 text-sm text-blue-800 bg-blue-100 w-full flex items-center gap-2">
-  <Link
-    to="/"
-    className="hover:text-blue-600 transition-colors duration-200 font-medium"
-  >
-    Home
-  </Link>
-  <span>/</span>
-  <Link
-    to="/our-course"
-    className="hover:text-blue-600 transition-colors duration-200 font-medium"
-  >
-    Our Course
-  </Link>
-  <span>/</span>
-  <Link
-    to="/subscription-plans"
-    className="hover:text-blue-600 transition-colors duration-200 font-medium"
-  >
-    our-courses
-  </Link>
-</p>
+  <marquee direction="right" className="py-2">
+بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ خَلَقَ الْإِنْسَانَ مِنْ عَلَقٍ اقْرَأْ وَرَبُّكَ الْأَكْرَمُ الَّذِي عَلَّمَ بِالْقَلَمِ عَلَّمَ الْإِنْسَانَ مَا لَمْ يَعْلَمْ كَلَّا إِنَّ الْإِنْسَانَ لَيَطْغَىٰ أَنْ رَآهُ اسْتَغْنَىٰ إِنَّ إِلَىٰ رَبِّكَ الرُّجْعَىٰ أَرَأَيْتَ الَّذِي يَنْهَىٰ عَبْدًا إِذَا صَلَّىٰ أَرَأَيْتَ إِنْ كَانَ عَلَى الْهُدَىٰ أَوْ أَمَرَ بِالتَّقْوَىٰ أَرَأَيْتَ إِنْ كَذَّبَ وَتَوَلَّىٰ أَلَمْ يَعْلَمْ بِأَنَّ اللَّهَ يَرَىٰ كَلَّا لَئِنْ لَمْ يَنْتَهِ لَنَسْفَعًا بِالنَّاصِيَةِ نَاصِيَةٍ كَاذِبَةٍ خَاطِئَةٍ فَلْيَدْعُ نَادِيَهُ سَنَدْعُ الزَّبَانِيَةَ كَلَّا لَا تُطِعْهُ وَاسْجُدْ وَاقْتَرِبْ ۩
+</marquee>
 
 
       <div className="relative bg-gradient-to-br from-blue-50 to-white text-blue-900 py-16 px-6 md:px-20 overflow-hidden">
@@ -50,11 +31,11 @@ export default function QuranHero() {
           </div>
 
           {/* Right side image */}
-          <div className="w-full md:w-1/2">
+          <div className="flx-1 rounded-l-[30%]  overflow-hidden">
             <img
-              src="/images/quran-lesson-illustration.png"
+              src={Hero}
               alt="Online Quran Lesson"
-              className="w-full max-w-md mx-auto"
+              className=" max-w-md mx-auto"
             />
           </div>
         </div>

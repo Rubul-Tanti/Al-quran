@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const baseURL=import.meta.env.VITE_API_BASEURL
+// const baseURL="http://localhost:8000"
+console.log(baseURL)
 export const api = axios.create({
-  baseURL: "https://al-kuran-backend-2.onrender.com/user", // change to your backend URL
+  baseURL: `${baseURL}/user`, // change to your backend URL
   withCredentials: true, // if you are using cookies
   headers: {
     "Content-Type": "application/json",
