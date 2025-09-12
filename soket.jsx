@@ -10,7 +10,7 @@ export const useSocket = () => useContext(SocketContext);
 const URL =
   process.env.NODE_ENV === "production"
     ? undefined
-    : "https://al-kuran-backend-2.onrender.com";
+    : "https://al-kuran-backend-1.onrender.com";
 
 export const SocketProvider = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
