@@ -56,16 +56,27 @@ const Videocall = () => {
         if (videoTrack && localVideoRef.current) videoTrack.attach(localVideoRef.current);
 
         // Handle remote participants dynamically
-        const addParticipantVideo = (participant) => {
-          participant.tracks.forEach((publication) => {
-            if (publication.track && publication.track.kind === "video") {
-              const videoEl = document.createElement("video");
-              videoEl.autoplay = true;
-              videoEl.playsInline = true;
-              publication.track.attach(videoEl);
-              if (remoteVideoRef.current) remoteVideoRef.current.appendChild(videoEl);
-            }
-          });
+const addParticipantVideo = (participant) => {
+  console.log(participant);
+
+  // Iterate over all video track publications
+  participant.videoTrackPublications.forEach((publication) => {
+    // Only attach if the track exists
+    if (publication.track) {
+      const videoEl = document.createElement("video");
+      videoEl.autoplay = true;
+      videoEl.playsInline = true;
+
+      // Attach the track to the video element
+      publication.track.attach(videoEl);
+
+      // Append to your container
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.appendChild(videoEl);
+      }
+    }
+  });
+
 
           participant.on("trackSubscribed", (track) => {
             if (track.kind === "video") {
