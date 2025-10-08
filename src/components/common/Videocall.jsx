@@ -95,6 +95,7 @@ useEffect(()=>{
         });
 
       } catch (err) {
+        toast.error(err)
         console.error("Error connecting to LiveKit:", err);
         setConnectionStatus("Connection Failed");
         toast.error("Failed to connect to video call");
