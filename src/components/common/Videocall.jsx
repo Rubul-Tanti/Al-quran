@@ -99,6 +99,7 @@ const addParticipantVideo = (participant) => {
         // Disconnection
         lkRoom.on("disconnected", () => setConnectionStatus("Disconnected"));
       } catch (err) {
+        toast.error(err.message)
         console.error("Error connecting to LiveKit:", err);
         setConnectionStatus("Connection Failed");
         toast.error("Failed to connect to video call");
