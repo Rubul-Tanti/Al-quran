@@ -17,10 +17,10 @@ const Videocall = () => {
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [room, setRoom] = useState(null);
-  const [localTracks, setLocalTracks] = useState([]);
 
   const roomName = "abc";
-  const identity = Math.random().toString();
+  const identityRef = useRef(Math.random().toString(36).substring(7));
+  const identity = identityRef.current;
 
   // Connect to LiveKit
   useEffect(() => {
@@ -28,65 +28,151 @@ const Videocall = () => {
     const connectToRoom = async () => {
       try {
         setConnectionStatus("Connecting...");
+        console.log("Requesting token for room:", roomName, "identity:", identity);
+        
         const res = await api.post(`/v1/livekit/token`, { identity, roomName });
         const { token, url } = res.data;
+        
+        console.log("Token received, connecting to:", url);
 
-        lkRoom = new Room({ adaptiveStream: true, dynacast: true, autoSubscribe: true });
+        lkRoom = new Room({
+          adaptiveStream: true,
+          dynacast: true,
+          autoSubscribe: true,
+          publishDefaults: {
+            videoSimulcastLayers: [
+              { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 1000000 } },
+              { resolution: { width: 640, height: 360 }, encoding: { maxBitrate: 300000 } },
+            ],
+          },
+        });
+
         await lkRoom.connect(url, token);
         setRoom(lkRoom);
         setConnectionStatus("Connected");
+        console.log("Connected to room successfully");
 
-        // Publish local tracks
-        const tracks = await lkRoom.localParticipant.createTracks({ audio: true, video: true });
-        setLocalTracks(tracks);
-        await Promise.all(tracks.map((track) => lkRoom.localParticipant.publishTrack(track)));
-
-        // Attach local video
-        const videoTrack = tracks.find((t) => t.kind === "video");
-        if (videoTrack && localVideoRef.current) videoTrack.attach(localVideoRef.current);
+        // Enable local tracks with better error handling
+        try {
+          console.log("Enabling camera...");
+          await lkRoom.localParticipant.setCameraEnabled(true);
+          
+          console.log("Enabling microphone...");
+          await lkRoom.localParticipant.setMicrophoneEnabled(true);
+          
+          console.log("Local tracks published successfully");
+          
+          // Attach local video
+          const videoTrack = Array.from(lkRoom.localParticipant.videoTracks.values())[0]?.track;
+          if (videoTrack && localVideoRef.current) {
+            videoTrack.attach(localVideoRef.current);
+          }
+        } catch (trackError) {
+          console.error("Error publishing local tracks:", trackError);
+          toast.warning("Could not enable camera/microphone. Check permissions.");
+          // Continue anyway - you can still receive video
+        }
 
         // Handle remote participants dynamically
         const addParticipantVideo = (participant) => {
-          console.log(participant);
+          console.log("Participant joined:", participant.identity);
 
-          // Iterate over all video track publications
-          participant.videoTrackPublications.forEach((publication) => {
-            // Only attach if the track exists
-            if (publication.track) {
-              const videoEl = document.createElement("video");
-              videoEl.autoplay = true;
-              videoEl.playsInline = true;
-
-              // Attach the track to the video element
-              publication.track.attach(videoEl);
-
-              // Append to your container
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.appendChild(videoEl);
-              }
-            }
-          });
-
-          participant.on("trackSubscribed", (track) => {
+          // Handle track subscription events
+          participant.on("trackSubscribed", (track, publication, participant) => {
+            console.log("Track subscribed:", track.kind, "from", participant.identity);
+            
             if (track.kind === "video") {
               const videoEl = document.createElement("video");
               videoEl.autoplay = true;
               videoEl.playsInline = true;
+              videoEl.muted = true; // Mute remote video to prevent echo
+              videoEl.style.width = "100%";
+              videoEl.style.height = "100%";
+              videoEl.style.objectFit = "cover";
+              videoEl.id = `video-${participant.identity}`;
+              
               track.attach(videoEl);
-              if (remoteVideoRef.current) remoteVideoRef.current.appendChild(videoEl);
+              
+              if (remoteVideoRef.current) {
+                // Remove any existing video for this participant
+                const existing = document.getElementById(`video-${participant.identity}`);
+                if (existing) {
+                  existing.remove();
+                }
+                remoteVideoRef.current.appendChild(videoEl);
+              }
+            } else if (track.kind === "audio") {
+              console.log("Audio track subscribed from", participant.identity);
+              const audioEl = document.createElement("audio");
+              audioEl.autoplay = true;
+              track.attach(audioEl);
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.appendChild(audioEl);
+              }
+            }
+          });
+
+          // Handle tracks being unsubscribed
+          participant.on("trackUnsubscribed", (track, publication, participant) => {
+            console.log("Track unsubscribed:", track.kind, "from", participant.identity);
+            const videoEl = document.getElementById(`video-${participant.identity}`);
+            if (videoEl) {
+              videoEl.remove();
+            }
+          });
+
+          // Check for already published tracks when participant joins
+          participant.trackPublications.forEach((publication) => {
+            console.log("Existing publication:", publication.kind, "subscribed:", publication.isSubscribed);
+            if (publication.isSubscribed && publication.track) {
+              if (publication.track.kind === "video") {
+                const videoEl = document.createElement("video");
+                videoEl.autoplay = true;
+                videoEl.playsInline = true;
+                videoEl.muted = true;
+                videoEl.style.width = "100%";
+                videoEl.style.height = "100%";
+                videoEl.style.objectFit = "cover";
+                videoEl.id = `video-${participant.identity}`;
+                
+                publication.track.attach(videoEl);
+                
+                if (remoteVideoRef.current) {
+                  remoteVideoRef.current.appendChild(videoEl);
+                }
+              } else if (publication.track.kind === "audio") {
+                const audioEl = document.createElement("audio");
+                audioEl.autoplay = true;
+                publication.track.attach(audioEl);
+                if (remoteVideoRef.current) {
+                  remoteVideoRef.current.appendChild(audioEl);
+                }
+              }
             }
           });
         };
 
         // Existing participants
-        console.log(lkRoom.remoteParticipants);
+        console.log("Remote participants:", lkRoom.remoteParticipants.size);
         lkRoom.remoteParticipants.forEach(addParticipantVideo);
 
         // New participants
         lkRoom.on("participantConnected", addParticipantVideo);
 
+        // Handle participant disconnection
+        lkRoom.on("participantDisconnected", (participant) => {
+          console.log("Participant disconnected:", participant.identity);
+          const videoEl = document.getElementById(`video-${participant.identity}`);
+          if (videoEl) {
+            videoEl.remove();
+          }
+        });
+
         // Disconnection
-        lkRoom.on("disconnected", () => setConnectionStatus("Disconnected"));
+        lkRoom.on("disconnected", () => {
+          console.log("Disconnected from room");
+          setConnectionStatus("Disconnected");
+        });
       } catch (err) {
         console.error("Error connecting to LiveKit:", err);
         setConnectionStatus("Connection Failed");
@@ -97,53 +183,70 @@ const Videocall = () => {
     connectToRoom();
 
     return () => {
-      if (lkRoom) lkRoom.disconnect();
+      if (lkRoom) {
+        console.log("Cleaning up and disconnecting");
+        lkRoom.disconnect();
+      }
     };
   }, []);
 
   // Mic toggle
-  const toggleMic = () => {
-    if (!room || localTracks.length === 0) return;
-    const audioTrack = localTracks.find((t) => t.kind === "audio");
-    if (audioTrack) {
-      audioTrack.enabled = !micOn;
-      setMicOn(!micOn);
+  const toggleMic = async () => {
+    if (!room) return;
+    
+    try {
+      if (micOn) {
+        await room.localParticipant.setMicrophoneEnabled(false);
+        setMicOn(false);
+        toast.info("Microphone muted");
+      } else {
+        await room.localParticipant.setMicrophoneEnabled(true);
+        setMicOn(true);
+        toast.info("Microphone unmuted");
+      }
+    } catch (err) {
+      console.error("Error toggling microphone:", err);
+      toast.error("Failed to toggle microphone");
     }
   };
 
   // Camera toggle
-  const toggleCamera = () => {
-    if (!room || localTracks.length === 0) return;
-    const videoTrack = localTracks.find((t) => t.kind === "video");
-    if (videoTrack) {
-      videoTrack.enabled = !cameraOn;
-      setCameraOn(!cameraOn);
+  const toggleCamera = async () => {
+    if (!room) return;
+    
+    try {
+      if (cameraOn) {
+        await room.localParticipant.setCameraEnabled(false);
+        setCameraOn(false);
+        toast.info("Camera turned off");
+      } else {
+        await room.localParticipant.setCameraEnabled(true);
+        setCameraOn(true);
+        toast.info("Camera turned on");
+      }
+    } catch (err) {
+      console.error("Error toggling camera:", err);
+      toast.error("Failed to toggle camera");
     }
   };
 
   // Screen share
   const toggleScreenShare = async () => {
     if (!room) return;
+    
     try {
       if (!screenShare) {
-        const screenTracks = await room.localParticipant.createScreenTracks({ audio: false, video: true });
-        await room.localParticipant.publishTrack(screenTracks[0]);
+        await room.localParticipant.setScreenShareEnabled(true);
         setShareScreen(true);
         toast.success("Screen sharing started");
       } else {
-        const screenTracks = Array.from(room.localParticipant.videoTracks.values()).filter(
-          (pub) => pub.source === "screen_share"
-        );
-        for (const track of screenTracks) {
-          await room.localParticipant.unpublishTrack(track.track);
-          track.track.stop();
-        }
+        await room.localParticipant.setScreenShareEnabled(false);
         setShareScreen(false);
         toast.success("Screen sharing stopped");
       }
     } catch (err) {
       console.error("Error toggling screen share:", err);
-      toast.error("Failed to toggle screen share");
+      toast.error("Failed to toggle screen share: " + err.message);
     }
   };
 
@@ -165,7 +268,7 @@ const Videocall = () => {
       timestamp: new Date().toLocaleTimeString(),
     };
     const encoder = new TextEncoder();
-    room.localParticipant.publishData(encoder.encode(JSON.stringify(newMessage)), "reliable");
+    room.localParticipant.publishData(encoder.encode(JSON.stringify(newMessage)), { reliable: true });
     setChatMessages((prev) => [...prev, newMessage]);
     setMessage("");
   };
@@ -173,13 +276,23 @@ const Videocall = () => {
   // Receive chat messages
   useEffect(() => {
     if (!room) return;
-    const handleDataReceived = (payload) => {
-      const decoder = new TextDecoder();
-      const messageData = JSON.parse(decoder.decode(payload));
-      setChatMessages((prev) => [...prev, messageData]);
+    
+    const handleDataReceived = (payload, participant) => {
+      try {
+        const decoder = new TextDecoder();
+        const messageData = JSON.parse(decoder.decode(payload));
+        console.log("Message received from:", participant?.identity);
+        setChatMessages((prev) => [...prev, messageData]);
+      } catch (err) {
+        console.error("Error parsing message:", err);
+      }
     };
+    
     room.on("dataReceived", handleDataReceived);
-    return () => room.off("dataReceived", handleDataReceived);
+    
+    return () => {
+      room.off("dataReceived", handleDataReceived);
+    };
   }, [room]);
 
   return (
