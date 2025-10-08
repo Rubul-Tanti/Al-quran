@@ -3,7 +3,7 @@ import { FiVideo, FiVideoOff, FiMic, FiMicOff, FiMonitor, FiSend } from "react-i
 import { GrEmoji } from "react-icons/gr";
 import { MdCallEnd } from "react-icons/md";
 import { toast } from "react-toastify";
-import { Room } from "livekit-client";
+import { createLocalVideoTrack, Room } from "livekit-client";
 import api from "../../utils/axios";
 
 const Videocall = () => {
@@ -21,16 +21,6 @@ const Videocall = () => {
 
   const roomName = "abc";
   const identity = Math.random().toString();
-
-  // Local media preview
-  useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-      })
-      .catch(() => toast.error("Cannot access camera/mic"));
-  }, []);
 
   // Connect to LiveKit
   useEffect(() => {
@@ -56,27 +46,26 @@ const Videocall = () => {
         if (videoTrack && localVideoRef.current) videoTrack.attach(localVideoRef.current);
 
         // Handle remote participants dynamically
-const addParticipantVideo = (participant) => {
-  console.log(participant);
+        const addParticipantVideo = (participant) => {
+          console.log(participant);
 
-  // Iterate over all video track publications
-  participant.videoTrackPublications.forEach((publication) => {
-    // Only attach if the track exists
-    if (publication.track) {
-      const videoEl = document.createElement("video");
-      videoEl.autoplay = true;
-      videoEl.playsInline = true;
+          // Iterate over all video track publications
+          participant.videoTrackPublications.forEach((publication) => {
+            // Only attach if the track exists
+            if (publication.track) {
+              const videoEl = document.createElement("video");
+              videoEl.autoplay = true;
+              videoEl.playsInline = true;
 
-      // Attach the track to the video element
-      publication.track.attach(videoEl);
+              // Attach the track to the video element
+              publication.track.attach(videoEl);
 
-      // Append to your container
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.appendChild(videoEl);
-      }
-    }
-  });
-
+              // Append to your container
+              if (remoteVideoRef.current) {
+                remoteVideoRef.current.appendChild(videoEl);
+              }
+            }
+          });
 
           participant.on("trackSubscribed", (track) => {
             if (track.kind === "video") {
@@ -90,7 +79,7 @@ const addParticipantVideo = (participant) => {
         };
 
         // Existing participants
-        console.log(lkRoom.remoteParticipants)
+        console.log(lkRoom.remoteParticipants);
         lkRoom.remoteParticipants.forEach(addParticipantVideo);
 
         // New participants
@@ -99,7 +88,6 @@ const addParticipantVideo = (participant) => {
         // Disconnection
         lkRoom.on("disconnected", () => setConnectionStatus("Disconnected"));
       } catch (err) {
-        toast.error(err.message)
         console.error("Error connecting to LiveKit:", err);
         setConnectionStatus("Connection Failed");
         toast.error("Failed to connect to video call");
@@ -143,7 +131,7 @@ const addParticipantVideo = (participant) => {
         setShareScreen(true);
         toast.success("Screen sharing started");
       } else {
-        const screenTracks = Array.from(room.localParticipant.tracks.values()).filter(
+        const screenTracks = Array.from(room.localParticipant.videoTracks.values()).filter(
           (pub) => pub.source === "screen_share"
         );
         for (const track of screenTracks) {
