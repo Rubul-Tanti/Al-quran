@@ -3,17 +3,13 @@ import { FiVideo, FiVideoOff, FiMic, FiMicOff, FiMonitor, FiSend } from "react-i
 import { GrEmoji } from "react-icons/gr";
 import { MdCallEnd } from "react-icons/md";
 import { toast } from "react-toastify";
-import { useSocket } from "../../../soket";
-import { useSelector } from "react-redux";
-import { Room, RoomEvent, createLocalTracks } from "livekit-client";
+import { Room } from "livekit-client";
 import api from "../../utils/axios";
 
 const Videocall = () => {
-  const socket = useSocket();
-  const remoteVideoRef = useRef();
-  const localVideoRef = useRef();
-  const remoteVideosContainerRef = useRef();
-  
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState("Connecting...");
@@ -23,79 +19,75 @@ const Videocall = () => {
   const [room, setRoom] = useState(null);
   const [localTracks, setLocalTracks] = useState([]);
 
-  let roomName = "abc";
-  let identity = Math.random().toString();
-let lkRoom
-useEffect(()=>{
-  navigator.mediaDevices.getUserMedia({video:true,audio:true}).then((stream)=>{
-    if(stream){
-      localVideoRef.srcObject=stream
-    }
-  })
+  const roomName = "abc";
+  const identity = Math.random().toString();
 
-})
+  // Local media preview
   useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+      })
+      .catch(() => toast.error("Cannot access camera/mic"));
+  }, []);
+
+  // Connect to LiveKit
+  useEffect(() => {
+    let lkRoom;
     const connectToRoom = async () => {
       try {
         setConnectionStatus("Connecting...");
-        
-        // 1️⃣ Get token from your backend
-        const res = await api.post(`/v1/livekit/token`,{ identity, roomName });
-        const data = await res.data; // Changed from res.json() to res.data for axios
-       
-        const { token,url} = data;
+        const res = await api.post(`/v1/livekit/token`, { identity, roomName });
+        const { token, url } = res.data;
 
-      lkRoom = new Room({ adaptiveStream: true, dynacast: true });
+        lkRoom = new Room({ adaptiveStream: true, dynacast: true, autoSubscribe: true });
         await lkRoom.connect(url, token);
-
         setRoom(lkRoom);
         setConnectionStatus("Connected");
 
-        // 3️⃣ Publish your local camera and mic
-        const tracks = await lkRoom.localParticipant.createTracks({
-          audio: true,
-          video: true,
-        });
-        
+        // Publish local tracks
+        const tracks = await lkRoom.localParticipant.createTracks({ audio: true, video: true });
         setLocalTracks(tracks);
-        
-        await Promise.all(
-          tracks.map((track) => lkRoom.localParticipant.publishTrack(track))
-        );
+        await Promise.all(tracks.map((track) => lkRoom.localParticipant.publishTrack(track)));
 
-        // 4️⃣ Render your own video
+        // Attach local video
         const videoTrack = tracks.find((t) => t.kind === "video");
-        if (videoTrack && localVideoRef.current) {
-          videoTrack.attach(localVideoRef.current);
-        }
+        if (videoTrack && localVideoRef.current) videoTrack.attach(localVideoRef.current);
 
-        // 5️⃣ Handle remote participants
-        lkRoom.on("participantConnected", (participant) => {
-          console.log("Participant connected:", participant.identity);
-          
-          participant.on("trackSubscribed", (track) => {
-            if (track.kind === "video" && remoteVideoRef.current) {
-              track.attach(remoteVideoRef.current);
-            }
-          });
-        });
-
-        // Handle existing participants
-        lkRoom.participants?.forEach((participant) => {
+        // Handle remote participants dynamically
+        const addParticipantVideo = (participant) => {
           participant.tracks.forEach((publication) => {
-            if (publication.track && publication.track.kind === "video" && remoteVideoRef.current) {
-              publication.track.attach(remoteVideoRef.current);
+            if (publication.track && publication.track.kind === "video") {
+              const videoEl = document.createElement("video");
+              videoEl.autoplay = true;
+              videoEl.playsInline = true;
+              publication.track.attach(videoEl);
+              if (remoteVideoRef.current) remoteVideoRef.current.appendChild(videoEl);
             }
           });
-        });
 
-        // Handle disconnection
-        lkRoom.on("disconnected", () => {
-          setConnectionStatus("Disconnected");
-        });
+          participant.on("trackSubscribed", (track) => {
+            if (track.kind === "video") {
+              const videoEl = document.createElement("video");
+              videoEl.autoplay = true;
+              videoEl.playsInline = true;
+              track.attach(videoEl);
+              if (remoteVideoRef.current) remoteVideoRef.current.appendChild(videoEl);
+            }
+          });
+        };
 
+        // Existing participants
+        console.log(lkRoom.remoteParticipants)
+        lkRoom.remoteParticipants.forEach(addParticipantVideo);
+
+        // New participants
+        lkRoom.on("participantConnected", addParticipantVideo);
+
+        // Disconnection
+        lkRoom.on("disconnected", () => setConnectionStatus("Disconnected"));
       } catch (err) {
-        toast.error(err)
         console.error("Error connecting to LiveKit:", err);
         setConnectionStatus("Connection Failed");
         toast.error("Failed to connect to video call");
@@ -105,57 +97,43 @@ useEffect(()=>{
     connectToRoom();
 
     return () => {
-      if (room) {
-        room.disconnect();
-      }
+      if (lkRoom) lkRoom.disconnect();
     };
   }, []);
 
-  const toggleMic = async () => {
-    if (room && localTracks.length > 0) {
-      const audioTrack = localTracks.find((t) => t.kind === "audio");
-      if (audioTrack) {
-        if (micOn) {
-          await room.localParticipant.unpublishTrack(audioTrack);
-          audioTrack.stop();
-        } else {
-          await room.localParticipant.publishTrack(audioTrack);
-        }
-        setMicOn(!micOn);
-      }
+  // Mic toggle
+  const toggleMic = () => {
+    if (!room || localTracks.length === 0) return;
+    const audioTrack = localTracks.find((t) => t.kind === "audio");
+    if (audioTrack) {
+      audioTrack.enabled = !micOn;
+      setMicOn(!micOn);
     }
   };
 
-  const toggleCamera = async () => {
-    if (room && localTracks.length > 0) {
-      const videoTrack = localTracks.find((t) => t.kind === "video");
-      if (videoTrack) {
-        if (cameraOn) {
-          videoTrack.mute();
-        } else {
-          videoTrack.unmute();
-        }
-        setCameraOn(!cameraOn);
-      }
+  // Camera toggle
+  const toggleCamera = () => {
+    if (!room || localTracks.length === 0) return;
+    const videoTrack = localTracks.find((t) => t.kind === "video");
+    if (videoTrack) {
+      videoTrack.enabled = !cameraOn;
+      setCameraOn(!cameraOn);
     }
   };
 
+  // Screen share
   const toggleScreenShare = async () => {
     if (!room) return;
-    
     try {
       if (!screenShare) {
-        const screenTrack = await room.localParticipant.createScreenTracks({
-          audio: false,
-          video: true,
-        });
-        await room.localParticipant.publishTrack(screenTrack[0]);
+        const screenTracks = await room.localParticipant.createScreenTracks({ audio: false, video: true });
+        await room.localParticipant.publishTrack(screenTracks[0]);
         setShareScreen(true);
         toast.success("Screen sharing started");
       } else {
-        const screenTracks = Array.from(room.localParticipant.tracks.values())
-          .filter((pub) => pub.source === "screen_share");
-        
+        const screenTracks = Array.from(room.localParticipant.tracks.values()).filter(
+          (pub) => pub.source === "screen_share"
+        );
         for (const track of screenTracks) {
           await room.localParticipant.unpublishTrack(track.track);
           track.track.stop();
@@ -169,50 +147,39 @@ useEffect(()=>{
     }
   };
 
+  // End call
   const endCall = () => {
     if (room) {
       room.disconnect();
       setConnectionStatus("Call Ended");
       toast.info("Call ended");
-      // You might want to navigate away or reset the component here
     }
   };
 
+  // Send chat message
   const sendMessage = () => {
-    if (message.trim() && room) {
-      const newMessage = {
-        text: message,
-        sender: userName,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      
-      // Send via data channel
-      const encoder = new TextEncoder();
-      const data = encoder.encode(JSON.stringify(newMessage));
-      room.localParticipant.publishData(data, "reliable");
-      
-      // Add to local chat
-      setChatMessages((prev) => [...prev, newMessage]);
-      setMessage("");
-    }
+    if (!message.trim() || !room) return;
+    const newMessage = {
+      text: message,
+      sender: identity,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    const encoder = new TextEncoder();
+    room.localParticipant.publishData(encoder.encode(JSON.stringify(newMessage)), "reliable");
+    setChatMessages((prev) => [...prev, newMessage]);
+    setMessage("");
   };
 
-  // Listen for incoming messages
+  // Receive chat messages
   useEffect(() => {
-    if (room) {
-      const handleDataReceived = (payload, participant) => {
-        const decoder = new TextDecoder();
-        const text = decoder.decode(payload);
-        const messageData = JSON.parse(text);
-        setChatMessages((prev) => [...prev, messageData]);
-      };
-
-      room.on("dataReceived", handleDataReceived);
-
-      return () => {
-        room.off("dataReceived", handleDataReceived);
-      };
-    }
+    if (!room) return;
+    const handleDataReceived = (payload) => {
+      const decoder = new TextDecoder();
+      const messageData = JSON.parse(decoder.decode(payload));
+      setChatMessages((prev) => [...prev, messageData]);
+    };
+    room.on("dataReceived", handleDataReceived);
+    return () => room.off("dataReceived", handleDataReceived);
   }, [room]);
 
   return (
