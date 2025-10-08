@@ -3,6 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import { GoBell } from "react-icons/go";
 import webLogo from "../../../public/webLogo.png";
 import defaultProfile from "../../assets/images/defaultprofile.png";
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
@@ -13,11 +14,11 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <img src={webLogo} alt="Website Logo" className="h-8 md:h-10" />
+            
           </div>
 
           {/* Desktop Search - visible on sm and above */}
         
-
           {/* Icons (Notifications + Profile) - stays top on mobile */}
           <div className="flex items-center gap-4">
               <div className="hidden sm:flex items-center border overflow-hidden border-zinc-200 h-10 rounded-lg px-3 ">

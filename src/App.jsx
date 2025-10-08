@@ -95,9 +95,9 @@ function App() {
               <Route path="/jobs/page/" element={<CourseList />} />
               <Route path="/jobs/page/:id" element={<JobDetails />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/videocall" element={<Videocall />} />
               <Route path="/jobs" element={<CourseList />} />
             </Route>
+              <Route path="/videocall" element={<Videocall />} />
         </Route>
       </Routes>
       <ToastContainer />
