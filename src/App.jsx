@@ -97,7 +97,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/jobs" element={<CourseList />} />
             </Route>
-              <Route path="/videocall" element={<Videocall />} />
+              <Route path="/videocall/:videoRoom" element={<Videocall />} />
         </Route>
       </Routes>
       <ToastContainer />

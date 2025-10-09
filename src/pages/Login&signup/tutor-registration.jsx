@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import countryCodes from "../../../constant/countryCode";
 import { toast } from "react-toastify";
 import sendOtp from "../../services/sendOtp";
-import Loader from "../../components/loader"; // ✅ make sure you have this component
+import Loader from "../../components/loader";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import registerTeacher from "../../services/teacherStudent";
@@ -14,7 +14,7 @@ const TutorRegisterForm = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingOtp, setOtpLoading] = useState(false);
-  const [resendLoading,setResendLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     dob: "",
@@ -33,19 +33,18 @@ const TutorRegisterForm = () => {
     phoneNumber: "",
     countryCode: "92",
     rate: "",
-    otp:""
+    otp: ""
   });
 
-    const [timeLeft, setTimeLeft] = useState(120); // 2 minutes = 120 sec
-  const otpRef=useRef("enter otp")
-  const navigate=useNavigate()
+  const [timeLeft, setTimeLeft] = useState(120);
+  const otpRef = useRef("enter otp");
+  const navigate = useNavigate();
 
- useEffect(() => {
+  useEffect(() => {
     if (timeLeft <= 0) return;
     const interval = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [timeLeft]);
 
@@ -65,8 +64,8 @@ const TutorRegisterForm = () => {
   };
 
   const addCourse = () => {
-    if (formData.courseInput.trim() && !courses.includes(formData.courseInput)) {
-      setCourses([...courses, formData.courseInput.trim()]);
+    if (formData.courseInput && !courses.includes(formData.courseInput)) {
+      setCourses([...courses, formData.courseInput]);
       setFormData((prev) => ({ ...prev, courseInput: "" }));
     }
   };
@@ -86,8 +85,6 @@ const TutorRegisterForm = () => {
         certificateName: "",
         certificateFile: null
       }));
-
-      // Clear the file input
       const fileInput = document.querySelector('input[name="certificateFile"]');
       if (fileInput) fileInput.value = "";
     }
@@ -96,17 +93,22 @@ const TutorRegisterForm = () => {
   const removeCertificate = (index) => {
     setCertificates(certificates.filter((_, i) => i !== index));
   };
-  // Prepare submission data
+
+  const removeLanguage = (index) => {
+    setLanguages(languages.filter((_, i) => i !== index));
+  };
+
+  const removeCourse = (index) => {
+    setCourses(courses.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
-    setResendLoading(true)
-     setFormData((prev) => ({
-      ...prev,
-      otp:"",
-    }));
+    setResendLoading(true);
+    setFormData((prev) => ({ ...prev, otp: "" }));
+    
     try {
-      // Basic validation
       if (!formData.email || !formData.name) {
         toast("Please fill in all required fields");
         setLoading(false);
@@ -115,462 +117,514 @@ const TutorRegisterForm = () => {
       
       const res = await sendOtp(formData.email);
       if (res.success) {
-        setOtpLoading(false);setTimeLeft(120);
-        otpRef.current=""
-        setTimeLeft(120)
+        setOtpLoading(false);
+        setTimeLeft(120);
+        otpRef.current = "";
         setOtpSent(true);
-        setResendLoading(false)
-        toast("otp sent to your email")
+        setResendLoading(false);
+        toast("OTP sent to your email");
       }
     } catch (e) {
-      setResendLoading(false)
-      setLoading(false)
-      console.log(e)
+      setResendLoading(false);
+      setLoading(false);
       if (e?.response?.data?.message === "User already exists") {
         toast("User already exists");
-      } 
-      else {
+      } else {
         toast(e?.response?.data?.message);
       }
-     if(!e.response){
-      toast("something went wrong")
-     }
+      if (!e.response) {
+        toast("Something went wrong");
+      }
     } finally {
       setLoading(false);
-      
     }
   };
 
-
-const otpHandler=async(e)=>{
-  e.preventDefault()
+  const otpHandler = async (e) => {
+    e.preventDefault();
     const submissionData = new FormData();
-      submissionData.append("name", formData.name);
-      submissionData.append("email", formData.email);
-      submissionData.append("profesnalEmail", formData.profesnalEmail);
-      submissionData.append("gender", formData.gender);
-      submissionData.append("country", formData.country);
-      submissionData.append("educationDetails", formData.education);
-      submissionData.append("bio", formData.bio);
-      submissionData.append("phone", `${formData.countryCode}${formData.phoneNumber}`);
-      submissionData.append("countryCode", formData.countryCode);
-      submissionData.append("rate", formData.rate);
-      submissionData.append("dob", formData.dob);
+    submissionData.append("name", formData.name);
+    submissionData.append("email", formData.email);
+    submissionData.append("profesnalEmail", formData.profesnalEmail);
+    submissionData.append("gender", formData.gender);
+    submissionData.append("country", formData.country);
+    submissionData.append("educationDetails", formData.education);
+    submissionData.append("bio", formData.bio);
+    submissionData.append("phone", `${formData.countryCode}${formData.phoneNumber}`);
+    submissionData.append("countryCode", formData.countryCode);
+    submissionData.append("rate", formData.rate);
+    submissionData.append("dob", formData.dob);
 
-      // Append profile picture if uploaded
-      if (formData.profilePicture) {
-        submissionData.append("profilePicture", formData.profilePicture);
+    if (formData.profilePicture) {
+      submissionData.append("profilePicture", formData.profilePicture);
+    }
+
+    certificates.forEach((cert) => {
+      submissionData.append(`${cert.name}`, cert.file);
+    });
+
+    languages.forEach((lang, index) => {
+      submissionData.append(`languages[${index}]`, lang);
+    });
+
+    courses.forEach((course, index) => {
+      submissionData.append(`specializations[${index}]`, course);
+    });
+
+    setOtpLoading(true);
+    const otpValue = formData.otp;
+    submissionData.append("otp", otpValue);
+    
+    try {
+      const data = await registerTeacher(submissionData);
+      if (data.success) {
+        setOtpLoading(false);
+        toast("Tutor registered successfully");
+        toast.info("Password has been sent to your email");
+        navigate("/login");
+      } else {
+        setOtpLoading(false);
+        toast("OTP not matched");
       }
+    } catch (error) {
+      setOtpLoading(false);
+      toast("Verification failed");
+    }
+  };
 
-      // Append certificates
-        certificates.forEach((cert, index) => {
-  submissionData.append(`${cert.name}`, cert.file);   // string
-});
-
-
-      // Append arrays
-      languages.forEach((lang, index) => {
-        submissionData.append(`languages[${index}]`, lang);
-      });
-
-      courses.forEach((course, index) => {
-        submissionData.append(`specializations[${index}]`, course);
-      });
-
-  setOtpLoading(true)
-
-  const otpValue=formData.otp
-  console.log(otpValue,"otp")
-  submissionData.append("otp",otpValue)
-  const data=await registerTeacher(submissionData)
-  if(data.success){
-    setOtpLoading(false)
-    toast("tutor registor successfully")
-    toast.info("password has been sent to your email")
-    navigate("/login")
-  }else{
-   setOtpLoading(false)
-    toast("otp not matched")
- }
-
-}
-
-     const formatTime = (seconds) => {
+  const formatTime = (seconds) => {
     const m = String(Math.floor(seconds / 60)).padStart(2, "0");
     const s = String(seconds % 60).padStart(2, "0");
     return `${m}:${s}`;
   };
 
-
-
-
   if (otpSent) {
- return (
-  <div className="flex min-h-screen items-center justify-center bg-blue-50 px-4">
-    <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg">
-      <form onSubmit={otpHandler} className="flex flex-col gap-6">
-        <h2 className="text-center text-2xl font-bold text-blue-900">
-          Verify OTP
-        </h2>
-        <input
-          type="text"
-          minLength={6}
-          maxLength={6}
-          name="otp"
-          onChange={handleChange}
-          className="w-full rounded-xl border-2 border-blue-900 px-4 py-3 text-center text-xl tracking-widest text-blue-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-          placeholder="Enter 6-digit OTP"
-        />
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-sm border border-zinc-200 p-8">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-zinc-800">Verify OTP</h2>
+            <p className="text-sm text-zinc-500 mt-2">Enter the 6-digit code sent to your email</p>
+          </div>
 
-        {timeLeft <= 0 && (
-          <p className="text-center text-sm font-medium text-red-600">
-            OTP expired! Please request a new one.
-          </p>
-        )}
+          <form onSubmit={otpHandler} className="space-y-4">
+            <input
+              type="text"
+              minLength={6}
+              maxLength={6}
+              name="otp"
+              value={formData.otp}
+              onChange={handleChange}
+              className="w-full text-center text-2xl tracking-widest px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="000000"
+            />
 
-        <button
-          disabled={timeLeft <= 0}
-          className={`w-full rounded-xl py-3 font-semibold transition-all duration-200 ${
-            timeLeft <= 0
-              ? "cursor-not-allowed bg-gray-300 text-gray-600"
-              : "bg-blue-900 text-white hover:bg-blue-800"
-          }`}
-        >
-          {loadingOtp ? "Verifying..." : "Verify OTP"}
-        </button>
-      </form>
+            {timeLeft <= 0 && (
+              <p className="text-center text-sm font-medium text-red-600">
+                OTP expired! Please request a new one.
+              </p>
+            )}
 
-      <div className="mt-6 flex flex-col items-center gap-3">
-        {timeLeft <= 0 && (
-          <button
-            onClick={(e) => handleSubmit(e)}
-            className="rounded-xl bg-green-500 px-6 py-2 font-semibold text-white transition-all hover:bg-green-600"
-          >
-            {resendLoading ? <Loader variant="button" /> : "Resend OTP"}
-          </button>
-        )}
+            <button
+              type="submit"
+              disabled={timeLeft <= 0 || loadingOtp}
+              className="w-full bg-zinc-900 text-white py-3 rounded-lg font-medium hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {loadingOtp ? "Verifying..." : "Verify OTP"}
+            </button>
 
-        <p className="text-center text-sm font-medium text-blue-900">
-          {timeLeft > 0 ? `⏳ Time left: ${formatTime(timeLeft)}` : "OTP expired"}
-        </p>
+            <div className="space-y-3 pt-4">
+              {timeLeft <= 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => handleSubmit(e)}
+                  className="w-full bg-white border border-zinc-300 text-zinc-700 py-2.5 rounded-lg font-medium hover:bg-zinc-50 transition-colors"
+                  disabled={resendLoading}
+                >
+                  {resendLoading ? "Sending..." : "Resend OTP"}
+                </button>
+              )}
+
+              <p className="text-center text-sm text-zinc-600">
+                {timeLeft > 0 ? `⏳ Time remaining: ${formatTime(timeLeft)}` : "OTP expired"}
+              </p>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-  </div>
-);
-
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="bg-white shadow-lg rounded-lg w-full max-w-4xl p-8">
-        <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
-          Tutor Registration
-        </h2>
+    <div className="min-h-screen bg-zinc-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden">
+          {/* Header */}
+          <div className="bg-zinc-900 text-white px-8 py-6">
+            <h2 className="text-3xl font-bold">Tutor Registration</h2>
+            <p className="text-zinc-300 mt-1">Join our platform and start teaching</p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Profile & Personal Info */}
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Profile Pic */}
-            <div className="flex flex-col items-center">
-              <div className="h-32 w-32 rounded-full overflow-hidden bg-gray-200 shadow">
-                {formData.profilePicture ? (
-                  <img
-                    src={URL.createObjectURL(formData.profilePicture)}
-                    alt="Preview"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center text-gray-400 text-sm">
-                    No Image
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Profile Picture */}
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative">
+                  <div className="h-32 w-32 rounded-full overflow-hidden bg-zinc-100 border-4 border-zinc-200">
+                    {formData.profilePicture ? (
+                      <img
+                        src={URL.createObjectURL(formData.profilePicture)}
+                        alt="Preview"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-4xl font-bold text-zinc-400">
+                        {formData.name.charAt(0).toUpperCase() || "?"}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+                <label className="cursor-pointer">
+                  <span className="inline-block px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors text-sm font-medium">
+                    Upload Photo
+                  </span>
+                  <input
+                    type="file"
+                    name="profilePicture"
+                    onChange={handleChange}
+                    accept="image/*"
+                    required
+                    className="hidden"
+                  />
+                </label>
               </div>
-              <input
-                type="file"
-                name="profilePicture"
-                onChange={handleChange}
-                accept="image/*"
-                required
-                className="mt-3 text-sm"
-              />
-            </div>
 
-            {/* Personal Info */}
-            <div className="flex-1 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700">Personal Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  name="name"
-                  type="text"
-                  placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg"
-                  required
-                />
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-zinc-800 border-b border-zinc-200 pb-2">
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      required
+                    />
+                  </div>
 
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg"
-                  required
-                />
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com"
+                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      required
+                    />
+                  </div>
 
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className="w-full p-3 border h-12 border-gray-300 rounded-lg"
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Gender <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                      required
+                    >
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
 
-                <div className="flex flex-col">
-                  <label htmlFor="dob" className="text-lg font-semibold text-gray-700">
-                    D.O.B
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Date of Birth <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="dob"
+                      value={formData.dob}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        name="countryCode"
+                        value={formData.countryCode}
+                        onChange={handleChange}
+                        className="w-32 px-3 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                        required
+                      >
+                        {countryCodes.map((c) => (
+                          <option key={c.code} value={c.dial_code}>
+                            +{c.dial_code}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                        placeholder="1234567890"
+                        maxLength={10}
+                        minLength={10}
+                        className="flex-1 px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Country <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                      required
+                    >
+                      <option value="">Select country</option>
+                      {countryCodes.map((nation) => (
+                        <option key={nation.code} value={nation.name}>
+                          {nation.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Teaching Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-zinc-800 border-b border-zinc-200 pb-2">
+                  Teaching Information
+                </h3>
+
+                {/* Languages */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-700">Languages Spoken</label>
+                  <div className="flex gap-2">
+                    <input
+                      name="languageInput"
+                      value={formData.languageInput}
+                      onChange={handleChange}
+                      placeholder="Add a language"
+                      className="flex-1 px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={addLanguage}
+                      className="px-6 py-2.5 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors font-medium"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {languages.map((lang, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-100 text-zinc-700 rounded-full text-sm font-medium"
+                      >
+                        {lang}
+                        <button
+                          type="button"
+                          onClick={() => removeLanguage(i)}
+                          className="text-zinc-500 hover:text-red-600 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Courses */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-700">Courses Offered</label>
+                  <div className="flex gap-2">
+                    <select
+                      name="courseInput"
+                      value={formData.courseInput}
+                      onChange={handleChange}
+                      className="flex-1 px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                    >
+                      <option value="">Select a course</option>
+                      <option value="Hifz Course">Hifz Course</option>
+                      <option value="Tajweed Course">Tajweed Course</option>
+                      <option value="Arabic Course">Arabic Course</option>
+                      <option value="Noorani Qaida">Noorani Qaida</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={addCourse}
+                      className="px-6 py-2.5 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors font-medium"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {courses.map((course, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-100 text-zinc-700 rounded-full text-sm font-medium"
+                      >
+                        {course}
+                        <button
+                          type="button"
+                          onClick={() => removeCourse(i)}
+                          className="text-zinc-500 hover:text-red-600 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Hourly Rate */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-700">
+                    Hourly Rate (USD) <span className="text-red-500">*</span>
                   </label>
                   <input
-                    id="dob"
-                    type="date"
-                    value={formData.dob}
-                    name="dob"
+                    name="rate"
+                    type="number"
+                    value={formData.rate}
                     onChange={handleChange}
+                    placeholder="15"
+                    className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required
                   />
                 </div>
 
-                {/* Phone Number */}
-                <div className="flex flex-col">
-                  <label className="block font-medium mb-2">Phone Number</label>
-                  <div className="flex">
-                    <select
-                      value={formData.countryCode}
-                      onChange={handleChange}
-                      name="countryCode"
-                      className="border w-24 border-gray-300 h-10 text-sm mr-2 rounded px-2 py-2 mb-2 bg-white outline-0"
-                      required
-                    >
-                      {countryCodes.map((c) => (
-                        <option key={c.code} value={c.dial_code}>
-                          ({c.dial_code}) ({c.name})
-                        </option>
-                      ))}
-                    </select>
+                {/* Education */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-700">
+                    Education Details <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    name="education"
+                    value={formData.education}
+                    onChange={handleChange}
+                    placeholder="Describe your educational background..."
+                    rows={3}
+                    className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    required
+                  />
+                </div>
+              </div>
 
+              {/* Additional Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-zinc-800 border-b border-zinc-200 pb-2">
+                  Additional Information
+                </h3>
+
+                {/* Certificates */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-700">
+                    Certificates <span className="text-zinc-500 text-xs">(Optional, max 10)</span>
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                     <input
-                      type="tel"
-                      name="phoneNumber"
-                      value={formData.phoneNumber}
+                      name="certificateName"
+                      value={formData.certificateName}
                       onChange={handleChange}
-                      placeholder="Enter phone number"
-                      className="border max-w-[150px] h-10 border-gray-300 outline-0 rounded px-3 py-2"
-                      maxLength={10}
-                      minLength={10}
-                      title="Enter 10 digit phone number"
-                      required
+                      placeholder="Certificate name"
+                      className="px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
+                    <input
+                      type="file"
+                      name="certificateFile"
+                      onChange={handleChange}
+                      accept=".pdf,.jpg,.png"
+                      className="px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={addCertificate}
+                      className="px-6 py-2.5 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors font-medium"
+                    >
+                      Add Certificate
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {certificates.map((cert, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between bg-zinc-50 border border-zinc-200 p-3 rounded-lg"
+                      >
+                        <div className="text-sm flex-1 min-w-0">
+                          <span className="font-medium text-zinc-800">{cert.name}</span>
+                          <span className="text-zinc-500 ml-2 truncate">({cert.file.name})</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeCertificate(i)}
+                          className="ml-3 text-red-600 hover:text-red-700 text-sm font-medium whitespace-nowrap"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <select
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  className="w-full p-3 border h-14 border-gray-300 rounded-lg"
-                  required
-                >
-                  <option value="">Select Country</option>
-                  {countryCodes.map((nation) => (
-                    <option key={nation.code} value={nation.name}>
-                      {nation.name}
-                    </option>
-                  ))}
-                </select>
+                {/* Bio */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-700">
+                    Bio <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleChange}
+                    placeholder="Tell us about yourself and your teaching experience..."
+                    rows={4}
+                    className="w-full px-4 py-2.5 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    required
+                  />
+                </div>
               </div>
-            </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-zinc-900 text-white py-3.5 rounded-lg font-semibold text-lg hover:bg-zinc-800 disabled:bg-zinc-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? "Processing..." : "Register as Tutor"}
+              </button>
+            </form>
           </div>
-
-          {/* Teaching Info */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-700">Teaching Information</h3>
-
-            {/* Languages */}
-            <div>
-              <label className="block font-medium mb-2">Languages Spoken</label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="text"
-                  name="languageInput"
-                  placeholder="Add language"
-                  value={formData.languageInput}
-                  onChange={handleChange}
-                  className="flex-1 p-3 border border-gray-300 rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={addLanguage}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-                >
-                  Add
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {languages.map((lang, i) => (
-                  <span
-                    key={i}
-                    className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                  >
-                    {lang}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Courses */}
-            <div>
-              <label className="block font-medium mb-2">Courses Offered</label>
-              <div className="flex gap-2 mb-3">
-                <select
-                  name="courseInput"
-                  value={formData.courseInput}
-                  onChange={handleChange}
-                  className="flex-1 p-3 border border-gray-300 rounded-lg"
-                >
-                  <option value="">Select a course</option>
-                  <option value="Hifz Course">Hifz Course</option>
-                  <option value="Tajweed Course">Tajweed Course</option>
-                  <option value="Arabic Course">Arabic Course</option>
-                  <option value="Noorani Qaida">Noorani Qaida</option>
-                </select>
-                <button
-                  type="button"
-                  onClick={addCourse}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-                >
-                  Add
-                </button>
-              </div>
-
-              <label htmlFor="rate">$ Hourly Rate</label>
-              <input
-                id="rate"
-                name="rate"
-                value={formData.rate}
-                onChange={handleChange
-                }
-                placeholder="Hourly Rate"
-                className="outline-0 border border-gray-300 rounded-lg px-3 py-2"
-                required
-              />
-
-              <div className="flex flex-wrap gap-2 mt-2">
-                {courses.map((course, i) => (
-                  <span
-                    key={i}
-                    className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
-                  >
-                    {course}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Education */}
-            <div>
-              <label className="block font-medium mb-2">Education Details</label>
-              <textarea
-                name="education"
-                placeholder="Describe your education background..."
-                value={formData.education}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                rows={3}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Certificates & Bio */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-700">Additional Information</h3>
-
-            <div>
-              <label className="block font-medium mb-2">Certificates (Optional)</label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="text"
-                  name="certificateName"
-                  onChange={handleChange}
-                  value={formData.certificateName}
-                  className="p-3 border border-gray-300 rounded-lg"
-                  placeholder="Certificate name"
-                />
-                <input
-                  type="file"
-                  name="certificateFile"
-                  onChange={handleChange}
-                  accept=".pdf,.jpg,.png"
-                  className="flex-1 p-3 border border-gray-300 rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={addCertificate}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-                >
-                  Add
-                </button>
-              </div>
-              <div className="space-y-2">
-                {certificates.map((cert, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between bg-gray-50 p-3 rounded-lg"
-                  >
-                    <div>
-                      <span className="font-medium">{cert.name}</span>
-                      <span className="text-gray-500 ml-2">({cert.file.name})</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeCertificate(i)}
-                      className="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-medium mb-2">Bio</label>
-              <textarea
-                name="bio"
-                placeholder="Tell us about yourself and your teaching experience..."
-                value={formData.bio}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                rows={4}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            {loading ? <Loader variant="button" /> : "Register as Tutor"}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

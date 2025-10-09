@@ -40,11 +40,13 @@ const Signup = () => {
 
   if(location.pathname==="/signup/")return<div className="flex flex-col overflow-hidden h-screen md:flex-row-reverse w-full min-h-screen">
              {/* Logo */}
+              <Link to={"/"}>
              <img
                alt="logo"
                src={webLogo}
                className="absolute top-4 left-4 md:top-4 md:left-6 md:h-10  h-8 drop-shadow-lg z-10"
-             />
+               />
+               </Link>
        
              {/* Left Side (Branding Section) */}
              <div className="flex flex-col justify-center items-center w-full md:w-2/3 bg-blue-900 text-white px-6 py-8 pb-0 md:py-0 min-h-[50vh] md:min-h-screen">

@@ -4,6 +4,7 @@ import api from "../../utils/axios";
 import Loader from "../loader";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { FiFileText, FiDollarSign, FiGlobe, FiBook } from "react-icons/fi";
 
 const defaultData = {
   title: "",
@@ -16,9 +17,9 @@ const defaultData = {
 };
 
 const CreatePost = () => {
-    const navigate=useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(defaultData);
-    const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
   const handleChange = (e) => {
@@ -29,103 +30,162 @@ const CreatePost = () => {
     }));
   };
 
-  const handleSubmit = async(e) => {
-    try{e.preventDefault();
-setLoading(true)
-    const finalData = {
-      ...formData,
-      name: user?.persnalDetails?.fullName || "",
-      id: user?._id || "",
-      profilePic: user?.persnalDetails.profileImage|| "",
-      socketId: user?.socketId|| "",
-    };
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      const finalData = {
+        ...formData,
+        name: user?.persnalDetails?.fullName || "",
+        id: user?._id || "",
+        profilePic: user?.persnalDetails.profileImage || "",
+        socketId: user?.socketId || "",
+      };
 
-    console.log(finalData);
-    const res= await api.post("/v1/createjob", finalData);
-   if(res.data.success){
-    toast.success("created post successfully")
-    navigate("/jobpost")
-   }
-    setFormData(defaultData);
-    }catch(e){
-    toast.error("something went wrong")    
+      console.log(finalData);
+      const res = await api.post("/v1/createjob", finalData);
+      if (res.data.success) {
+        toast.success("Created post successfully");
+        navigate("/jobpost");
+      }
+      setFormData(defaultData);
+    } catch (e) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
-    finally{
-        setLoading(false)
-    }  
-};
+  };
 
   return (
-    <div className="bg-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-blue-900 mb-6 text-center">
-          Create Job Post
-        </h1>
+    <div className="bg-white min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-2xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-black mb-2">Create Job Post</h1>
+          <p className="text-gray-500">Fill in the details to post a new job opportunity</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
           {/* Title */}
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Title"
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none"
-          />
-
-          {/* Description */}
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Description"
-            rows="3"
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none"
-          />
-
-          {/* Language */}
-          <input
-            type="text"
-            name="language"
-            value={formData.language}
-            onChange={handleChange}
-            placeholder="Language"
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none"
-          />
-
-          {/* Budget */}
-          <div className="flex flex-row items-center gap-2">
-            <input
-              type="number"
-              name="budget"
-              value={formData.budget}
-              onChange={handleChange}
-              placeholder="Budget"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none"
-            />
-            <p className="text-zinc-500 text-xl">USD/Hour</p>
+          <div>
+            <label className="block text-sm font-medium text-black mb-2">
+              Job Title
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiFileText className="text-blue-300" />
+              </div>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="e.g. Quran Teacher for Tajweed Course"
+                required
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition"
+              />
+            </div>
           </div>
 
-          {/* Course */}
-          <select
-            name="course"
-            value={formData.course}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none"
-          >
-            <option value="">Select a course</option>
-            <option value="Hifz Course">Hifz Course</option>
-            <option value="Tajweed Course">Tajweed Course</option>
-            <option value="Arabic Course">Arabic Course</option>
-            <option value="Noorani Qaida">Noorani Qaida</option>
-          </select>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-black mb-2">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Describe the job requirements, expectations, and any additional details..."
+              rows="5"
+              required
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition resize-none"
+            />
+          </div>
 
-          {/* Submit */}
+          {/* Course & Language Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Course */}
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">
+                Course
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiBook className="text-blue-300" />
+                </div>
+                <select
+                  name="course"
+                  value={formData.course}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition appearance-none bg-white"
+                >
+                  <option value="">Select a course</option>
+                  <option value="Hifz Course">Hifz Course</option>
+                  <option value="Tajweed Course">Tajweed Course</option>
+                  <option value="Arabic Course">Arabic Course</option>
+                  <option value="Noorani Qaida">Noorani Qaida</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Language */}
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">
+                Language
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiGlobe className="text-blue-300" />
+                </div>
+                <input
+                  type="text"
+                  name="language"
+                  value={formData.language}
+                  onChange={handleChange}
+                  placeholder="e.g. English, Arabic"
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Budget */}
+          <div>
+            <label className="block text-sm font-medium text-black mb-2">
+              Hourly Rate
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiDollarSign className="text-blue-300" />
+              </div>
+              <input
+                type="number"
+                name="budget"
+                value={formData.budget}
+                onChange={handleChange}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                required
+                className="w-full pl-10 pr-24 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <span className="text-gray-500 text-sm font-medium">USD/Hour</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-900 text-white py-3 rounded-md font-semibold hover:bg-blue-800 transition"
+            disabled={loading}
+            className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {loading?<Loader variant="button"/>:"Create Post"}
+            {loading ? <Loader variant="button" /> : "Create Job Post"}
           </button>
         </form>
       </div>

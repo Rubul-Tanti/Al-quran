@@ -6,7 +6,9 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo & Security */}
         <div>
+           <Link to={"/"}>
           <img src={webLogo} alt="weblogo" className="h-6 md:h-10"/>
+        </Link>
         </div>
 
         {/* Company Info */}
