@@ -85,7 +85,7 @@ function App() {
               <Route path="find-teachers" element={<FindTeachers />} />
               <Route path="find-teachers/:id" element={<TeacherDetails />} />
               <Route path="messages" element={<Chat />}>
-                <Route path="/messages/:id" element={<Message />} />
+              <Route path="/messages/chat/:id" element={<Message />} />  
               </Route>
               <Route path="/jobpost" element={<MyPosts />} />
               <Route path="/jobpost/edit/:id" element={<EditPost />} />

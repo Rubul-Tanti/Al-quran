@@ -35,8 +35,8 @@ setLoading(false)
   }catch(e){
     setLoading(false)
     const data=e.response.data;
-  if(!data.success){toast(data.message)
-    toast(data.message)
+  if(!data.success){
+    toast.success(data.message)
   }else{
     setError("An error occurred during login. Please try again.");
     toast("An error occurred during login. Please try again.")

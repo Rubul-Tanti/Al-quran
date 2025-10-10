@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import React, { useEffect, useRef, useState } from 'react'
 import api from '../../../utils/axios'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Loader from '../../loader'
 import { FiSend } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
 import { useSocket } from '../../../../soket'
 import GetUser from '../../../services/get-user'
-
+import chatbg from "../../../../public/chatbg.jpg"
+import { MdArrowBack } from 'react-icons/md'
 const fetchChats = async (id) => {
   const { data } = await api.get(`/v1/chats/${id}`)
   return data
@@ -15,9 +16,11 @@ const fetchChats = async (id) => {
 
 const Message = () => {
   const { id } = useParams()
-  const msgRef = useRef()
-  const user = useSelector(state => state.auth.user)
-  const teacher = user.chats.find(item => item.chatId === id)
+  const Authobj = useSelector(state => state.auth)
+ 
+
+const user =Authobj.user
+  const teacher = user?.chats?.find(item => item.chatId === id)
   const propdata = { id: teacher.id, role: user.role === "student" ? "teacher" : "student" }
   const Nextuser = useQuery({ queryKey: ["next-chating user"], queryFn: () => GetUser(propdata) })
   const socket = useSocket()
@@ -81,13 +84,18 @@ const Message = () => {
   }
 
   if (isLoading || Nextuser.isLoading) return <Loader />
-
+  if(Authobj.loading){return<Loader/>}
   return (
-    <div className="flex-1 flex flex-col bg-white">
+    <div className=" h-full w-full relative flex flex-col bg-white">
       {/* Header */}
-      <div className="bg-white border-b border-zinc-200 shadow-sm">
+      <div className="bg-white  border-b  border-zinc-200 shadow-sm">
+    
         <div className="flex items-center justify-between p-4">
+          
           <div className="flex items-center gap-3">
+                <Link to={'/messages'}>
+            <MdArrowBack className='' size={25}/>
+            </Link> 
             <div className="relative">
               <img 
                 src={teacher?.profilePic} 
@@ -125,7 +133,8 @@ const Message = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto bg-zinc-50 p-4 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
+      <div style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
+    backgroundPosition: "center", }} className="flex-1 overflow-y-auto max-h-[530px] sm:max-h-full  p-2 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
         {chat.map((msg, idx) => {
           const isOwn = msg.sender === user._id;
           const showAvatar = idx === 0 || chat[idx - 1].sender !== msg.sender;
@@ -135,31 +144,19 @@ const Message = () => {
               key={idx}
               className={`flex ${isOwn ? "justify-end" : "justify-start"} items-end gap-2 animate-slideIn`}
             >
-              {!isOwn && (
-                <div className="flex-shrink-0">
-                  {showAvatar ? (
-                    <img 
-                      src={teacher?.profilePic} 
-                      className="h-7 w-7 rounded-full object-cover border-2 border-white shadow-sm" 
-                      alt="teacher"
-                    />
-                  ) : (
-                    <div className="h-7 w-7"></div>
-                  )}
-                </div>
-              )}
+           
               
               <div className={`max-w-[75%] md:max-w-[60%] group ${isOwn ? "items-end" : "items-start"} flex flex-col`}>
                 <div className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all ${
                   isOwn 
-                    ? "bg-blue-500 text-white rounded-br-md" 
-                    : "bg-white text-zinc-700 rounded-bl-md border border-zinc-200"
+                    ? "bg-black text-zinc-300 rounded-br-md" 
+                    : " bg-zinc-300 text-black rounded-bl-md border border-zinc-200"
                 }`}>
                   <p className="text-sm leading-relaxed break-words">{msg.text}</p>
                 </div>
                 
                 <div className={`flex items-center gap-1.5 mt-1 px-1 ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-zinc-700">
                     {new Date(msg.createdAt).toLocaleTimeString("en-IN", {
                       timeZone: "Asia/Kolkata",
                       hour: "2-digit",
@@ -175,17 +172,14 @@ const Message = () => {
                 </div>
               </div>
               
-              {isOwn && <div className="flex-shrink-0 h-7 w-7"></div>}
+          
             </div>
           );
         })}
         <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <div className="bg-white border-t border-zinc-200 p-4">
+            <div className="bg-transparent sticky bottom-0 ">
         <div className="flex items-end gap-2 max-w-4xl mx-auto">
-          <div className="flex-1 flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2 transition-all">
+          <div className="flex-1 flex items-center gap-2 bg-zinc-800 border border-zinc-200 rounded-full px-4 py-2 transition-all">
             <button className="flex-shrink-0 p-1.5 hover:bg-zinc-200 rounded-full transition-colors">
               <svg className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -216,17 +210,22 @@ const Message = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
             </button>
-          </div>
-          
-          <button
+                <button
             onClick={handleSend}
             disabled={!text.trim()}
             className="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-500 shadow-sm hover:shadow-md transform active:scale-95"
           >
-            <FiSend className="w-5 h-5" />
+            <FiSend className="w-4 h-4" />
           </button>
+          </div>
+          
+      
         </div>
       </div>
+      </div>
+
+      {/* Input */}
+  
 
       <style jsx>{`
         @keyframes slideIn {

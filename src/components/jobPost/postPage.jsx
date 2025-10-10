@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { BsFillPostcardFill } from "react-icons/bs";
+
 import api from "../../utils/axios";
 import { useSelector } from "react-redux";
 import Loader from "../loader";
@@ -39,11 +41,11 @@ export default function MyPosts() {
     <>
     <div className="min-h-screen bg-white text-zinc-700 px-6 py-10">
       {/* Header */}
-      <div className="max-w-6xl mx-auto flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold tracking-tight">My Job Posts</h1>
+      <div className="max-w-6xl mx-auto flex md:flex-row flex-col justify-between items-start  md:items-center mb-10">
+        <h1 className="text-3xl font-bold tracking-tight"><BsFillPostcardFill size={25} className="text-blue-400 inline"/> My Job Posts</h1>
         <button
           onClick={() => navigate("/create-job")}
-          className="px-5 py-2 bg-blue-400 text-white font-semibold rounded-lg shadow hover:bg-blue-500 transition"
+          className="md:px-5 px-2 py-2 md:mt-0 mt-2 md:text-base text-sm bg-blue-400 text-white font-semibold rounded-lg shadow hover:bg-blue-500 transition"
         >
           + Create Post
         </button>
