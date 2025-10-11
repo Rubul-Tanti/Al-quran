@@ -25,7 +25,7 @@ const user =Authobj.user
   const Nextuser = useQuery({ queryKey: ["next-chating user"], queryFn: () => GetUser(propdata) })
   const socket = useSocket()
   const messagesEndRef = useRef(null)
-
+const containerRef=useRef()
   const { data, isLoading } = useQuery({
     queryKey: ["messages", id],
     queryFn: () => fetchChats(id),
@@ -40,14 +40,14 @@ const user =Authobj.user
       setChat(data.data.messages)
     }
   }, [data])
-const containerRef=useRef()
-  useEffect(() => {
-  const container = containerRef.current;
-  if(container){
+useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const container = containerRef.current;
+    if (!container) return;
     container.scrollTop = container.scrollHeight;
-  }
 
-  }, [chat])
+
+},[chat])
 
   useEffect(() => {
     if (!socket) return
@@ -137,9 +137,9 @@ const containerRef=useRef()
       </div>
 
       {/* Messages */}
-      <div ref={containerRef} style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
+      <div onLoad={()=>{     containerRef.current = containerRef.current.scrollHeight; }} ref={containerRef} style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
     backgroundPosition: "center", }} className="flex-1 overflow-y-auto max-h-[530px] sm:max-h-full  p-2 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
-        {chat.map((msg, idx) => {
+        <div>{chat.map((msg, idx) => {
           const isOwn = msg.sender === user._id;
           const showAvatar = idx === 0 || chat[idx - 1].sender !== msg.sender;
           
@@ -180,6 +180,7 @@ const containerRef=useRef()
             </div>
           );
         })}
+        </div>
         <div ref={messagesEndRef}/>
             <div className="bg-transparent sticky bottom-0 ">
         <div className="flex items-end gap-2 max-w-4xl mx-auto">
