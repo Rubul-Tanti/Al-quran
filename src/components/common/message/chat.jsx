@@ -40,9 +40,13 @@ const user =Authobj.user
       setChat(data.data.messages)
     }
   }, [data])
-
+const containerRef=useRef()
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+  const container = containerRef.current;
+  if(container){
+    container.scrollTop = container.scrollHeight;
+  }
+
   }, [chat])
 
   useEffect(() => {
@@ -133,7 +137,7 @@ const user =Authobj.user
       </div>
 
       {/* Messages */}
-      <div style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
+      <div ref={containerRef} style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
     backgroundPosition: "center", }} className="flex-1 overflow-y-auto max-h-[530px] sm:max-h-full  p-2 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
         {chat.map((msg, idx) => {
           const isOwn = msg.sender === user._id;
@@ -176,7 +180,7 @@ const user =Authobj.user
             </div>
           );
         })}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef}/>
             <div className="bg-transparent sticky bottom-0 ">
         <div className="flex items-end gap-2 max-w-4xl mx-auto">
           <div className="flex-1 flex items-center gap-2 bg-zinc-800 border border-zinc-200 rounded-full px-4 py-2 transition-all">
@@ -196,7 +200,7 @@ const user =Authobj.user
                   handleSend();
                 }
               }}
-              className="flex-1 bg-transparent text-zinc-700 placeholder-zinc-400 outline-none resize-none text-sm"
+              className="flex-1 bg-transparent text-zinc-300 placeholder-zinc-400 outline-none resize-none text-sm"
               rows="1"
               style={{
                 minHeight: '24px',

@@ -15,12 +15,9 @@ export const fetchuser = createAsyncThunk("v1/fetchuser", async (_, { rejectWith
     }
   } catch (err) {
     const data =err.response.data
-    console.log(data)
-    if(!data.success){
-    toast("Login To Continue")
-  } 
+
   return rejectWithValue("Unauthorized")
-    toast("something went wrong")
+    toast.error("something went wrong")
   }
 
 });
