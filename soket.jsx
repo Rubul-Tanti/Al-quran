@@ -7,15 +7,15 @@ const SocketContext = createContext(null);
 
 export const useSocket = () => useContext(SocketContext);
 
-const URL =
-  process.env.NODE_ENV === "production"
-    ? undefined
-    : "https://al-kuran-backend-2.onrender.com";
-
 // const URL =
 //   process.env.NODE_ENV === "production"
 //     ? undefined
-//     : "http://localhost:8000";
+//     : "https://al-kuran-backend-2.onrender.com";
+
+const URL =
+  process.env.NODE_ENV === "production"
+    ? undefined
+    : "http://localhost:8000";
 
 
 export const SocketProvider = ({ children }) => {
