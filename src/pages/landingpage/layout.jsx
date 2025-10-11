@@ -4,6 +4,7 @@ import { Outlet, Route, Routes } from 'react-router-dom'
 import HomePage from "./home"
 import OurCourses from "./our-courses"
 import SubscriptionsPlan from "./subscriptionPlans"
+import Mobilenav from "../../components/mobileNavTab"
 
 const LandingpageLayout = () => {
   return (

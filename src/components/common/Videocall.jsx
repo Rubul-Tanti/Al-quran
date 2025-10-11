@@ -5,8 +5,14 @@ import { MdCallEnd } from "react-icons/md";
 import { toast } from "react-toastify";
 import { Room } from "livekit-client";
 import api from "../../utils/axios";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Videocall = () => {
+  const user=useSelector(state=>state.auth.user)
+
+  const {videoRoom}=useParams()
+
   const localVideoRef = useRef(null);
   const remoteVideosContainerRef = useRef(null);
   const roomRef = useRef(null);
@@ -19,8 +25,8 @@ const Videocall = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [remoteParticipants, setRemoteParticipants] = useState(new Map());
 
-  const roomName = "abc";
-  const identityRef = useRef(Math.random().toString(36).substring(7));
+  const roomName =videoRoom
+  const identityRef =user?.name||"abc"
   const identity = identityRef.current;
 
   // Connect to LiveKit

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { BsFillPostcardFill } from "react-icons/bs";
+
 import api from "../../utils/axios";
 import { useSelector } from "react-redux";
 import Loader from "../loader";
@@ -37,13 +39,13 @@ export default function MyPosts() {
 
   return (
     <>
-    <div className="min-h-screen bg-white text-blue-900 px-6 py-10">
+    <div className="min-h-screen bg-white text-zinc-700 px-6 py-10">
       {/* Header */}
-      <div className="max-w-6xl mx-auto flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold tracking-tight">My Job Posts</h1>
+      <div className="max-w-6xl mx-auto flex md:flex-row flex-col justify-between items-start  md:items-center mb-10">
+        <h1 className="text-3xl font-bold tracking-tight"><BsFillPostcardFill size={25} className="text-blue-400 inline"/> My Job Posts</h1>
         <button
           onClick={() => navigate("/create-job")}
-          className="px-5 py-2 bg-blue-900 text-white font-semibold rounded-lg shadow hover:bg-blue-800 transition"
+          className="md:px-5 px-2 py-2 md:mt-0 mt-2 md:text-base text-sm bg-blue-400 text-white font-semibold rounded-lg shadow hover:bg-blue-500 transition"
         >
           + Create Post
         </button>
@@ -53,7 +55,7 @@ export default function MyPosts() {
       <div className="max-w-6xl mx-auto">
         {posts.length === 0 ? (
           <div className="text-center py-16 bg-gray-100 rounded-xl border border-gray-200">
-            <p className="text-blue-900 text-lg font-medium">
+            <p className="text-blue-400 text-lg font-medium">
               No posts created yet.
             </p>
           </div>
@@ -62,15 +64,15 @@ export default function MyPosts() {
             {posts.map((post) => (
               <div
                 key={post._id}
-                className="bg-white border border-gray-200 text-blue-900 rounded-xl shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition"
+                className="bg-white border border-gray-200 text-zinc-700 rounded-xl shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition"
               >
                 <div>
                  <Link to={`${post._id}`}> <h2 className="text-xl font-bold mb-2 hover:underline cursor-pointer">{post.title}</h2></Link>
                   <p className="text-gray-700 mb-3 line-clamp-3">
                     {post.description}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Budget: <span className="font-medium">${post.budget}</span>
+                  <p className="text-sm text-blue-600 ">
+                    Budget: <span className="font-medium text-gray-500">${post.budget}</span>
                   </p>
                 </div>
               </div>

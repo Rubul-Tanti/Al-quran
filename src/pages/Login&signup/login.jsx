@@ -35,8 +35,8 @@ setLoading(false)
   }catch(e){
     setLoading(false)
     const data=e.response.data;
-  if(!data.success){toast(data.message)
-    toast(data.message)
+  if(!data.success){
+    toast.success(data.message)
   }else{
     setError("An error occurred during login. Please try again.");
     toast("An error occurred during login. Please try again.")
@@ -46,11 +46,13 @@ setLoading(false)
   return (
     <div className="flex flex-col overflow-hidden h-screen md:flex-row-reverse w-full min-h-screen">
       {/* Logo */}
+       <Link to={"/"}>
       <img
         alt="logo"
         src={webLogo}
         className="absolute top-4 left-4 md:top-4 md:left-6 md:h-10  h-8 drop-shadow-lg z-10"
-      />
+        />
+        </Link>
 
       {/* Left Side (Branding Section) */}
       <div className="flex flex-col justify-center items-center w-full md:w-2/3 bg-blue-900 text-white px-6 py-8 pb-0 md:py-0 min-h-[50vh] md:min-h-screen">
@@ -62,11 +64,12 @@ setLoading(false)
           Learn or Teach the Quran online for kids & adults from the comfort of
           your home.
         </p>
+       
         <img
           src={loginImage}
           alt="Login Illustration"
           className="max-w-[180px] sm:max-w-[240px] md:max-w-[300px]  drop-shadow-2xl  w-full"
-        />
+          />
       </div>
 
       <div className="flex justify-center items-center w-full md:w-1/3 bg-white p-6 sm:p-8 shadow-lg min-h-[50vh] md:min-h-screen mt-5 overflow-hidden">

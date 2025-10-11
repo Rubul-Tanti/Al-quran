@@ -31,11 +31,13 @@ const SettingsPage = () => {
       {/* Sidebar */}
       <div className="bg-white shadow-lg border-b md:border-b-0 md:border-r w-full md:w-64 p-4">
         <div className="flex items-center justify-between md:block">
+          <Link to={"/"}>
           <img
             alt="logo"
             src={webLogo}
             className="h-8 md:h-10 drop-shadow-lg"
           />
+        </Link>
         </div>
         <Link
             to={`/user/${user}/dashboard`}

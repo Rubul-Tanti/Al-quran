@@ -1,36 +1,40 @@
 import React, { useState } from "react";
-import { useParams, Navigate, href, useNavigate, Link } from "react-router-dom";
+import { useParams, Navigate, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../utils/axios";
 import Loader from "../loader";
 import { toast } from "react-toastify";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiDollarSign, FiBook, FiGlobe, FiMessageSquare, FiUserCheck, FiUserX, FiCopy, FiTrash2 } from "react-icons/fi";
+
 const MyPostDetails = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
-  const [loading,setloading]=useState(false)
-   const handleClosePost = (id) => {
+  const [loading, setloading] = useState(false);
+
+  const handleClosePost = (id) => {
     toast.info(
-      <div className="text-blue-900">
+      <div className="text-black">
         <p className="font-semibold">Close Post</p>
-        <p className="text-sm">Are you sure you want to close this post?</p>
+        <p className="text-sm text-gray-600">Are you sure you want to close this post?</p>
         <div className="flex gap-3 mt-3">
           <button
-            onClick={() => toast.dismiss()} // cancel action
+            onClick={() => toast.dismiss()}
             className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
           >
             Cancel
           </button>
           <button
-            onClick={async() => {
-            const {data}= await api.post(`/v1/deletejob/${id}`)
-            if(data.success){
-              toast("post deleted successfully")
-              navigate("/jobpost")
-            }else{toast.error("internal server Error")}
+            onClick={async () => {
+              const { data } = await api.post(`/v1/deletejob/${id}`);
+              if (data.success) {
+                toast("Post deleted successfully");
+                navigate("/jobpost");
+              } else {
+                toast.error("Internal server error");
+              }
               toast.dismiss();
             }}
-            className="px-3 py-1 bg-blue-900 text-white rounded-lg hover:bg-blue-800"
+            className="px-3 py-1 bg-zinc-700 text-white rounded-lg hover:bg-gray-800"
           >
             Close Post
           </button>
@@ -38,8 +42,8 @@ const MyPostDetails = () => {
       </div>,
       {
         position: "bottom-center",
-        className: "bg-blue-50 rounded-lg shadow-lg",
-        autoClose: false, // stay until action
+        className: "bg-white rounded-lg shadow-lg border border-gray-200",
+        autoClose: false,
         closeOnClick: false,
         draggable: false,
         hideProgressBar: true,
@@ -59,7 +63,7 @@ const MyPostDetails = () => {
   } = useQuery({ queryKey: ["myJob", id], queryFn: fetchMyJob });
 
   if (isLoading) return <Loader />;
-  console.log(job)
+
   if (error) {
     toast.error("Job not found");
     return <Navigate to={"/jobpost"} />;
@@ -67,127 +71,180 @@ const MyPostDetails = () => {
 
   const formattedDate = new Date(job.postedAt).toLocaleDateString();
 
-const notHire=async(proposalId )=>{
-try{const jobId=job._id
-  setloading(true)
-const {data}=await api.post("/v1/job/proposal-delete",{proposalId,jobId})
-if(data.success){
-  toast("proposal deleted successfully")
-  window.location.reload();
-}
-}catch(e){
-console.log(e)
-toast("something went wrong try again latter")
-}
-finally{setloading(false)}
-}
-const interview=async({teacherId,teacherName,teacherProfilePic})=>{
-  try{const student={studentId:job.postedBy.id,studentName:job.postedBy.name,studentProfilePic:job.postedBy.profilePic}
-const teacher={teacherId,teacherName,teacherProfilePic}
-const {data}=await api.post("/v1/job/initialize-chat",{teacher,student})
-if(data.success){
-  navigate(`/messages/${data.data._id}`)
-}  
-}catch(e){
-    console.log(e)
-  }
-}
+  const notHire = async (proposalId) => {
+    try {
+      const jobId = job._id;
+      setloading(true);
+      const { data } = await api.post("/v1/job/proposal-delete", { proposalId, jobId });
+      if (data.success) {
+        toast("Proposal deleted successfully");
+        window.location.reload();
+      }
+    } catch (e) {
+      console.log(e);
+      toast("Something went wrong, try again later");
+    } finally {
+      setloading(false);
+    }
+  };
+
+  const interview = async ({ teacherId, teacherName, teacherProfilePic }) => {
+    try {
+      const student = {
+        studentId: job.postedBy.id,
+        studentName: job.postedBy.name,
+        studentProfilePic: job.postedBy.profilePic,
+      };
+      const teacher = { teacherId, teacherName, teacherProfilePic };
+      const { data } = await api.post("/v1/job/initialize-chat", { teacher, student });
+      if (data.success) {
+        navigate(`/messages/${data.data._id}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 text-blue-900 p-8">
-      <div className="max-w-5xl mx-auto space-y-12">
+    <div className="min-h-screen bg-white p-8">
+      <div className="max-w-5xl mx-auto space-y-10">
         {/* Job Header */}
-        <header className="space-y-3">
-         <div className="flex justify-between max-w-[500px]"> <h1 className="text-4xl font-bold">{job.title}</h1> <Link to={`/jobpost/edit/${job._id}`}><FiEdit size={20}/></Link></div>
-          <p className="text-sm text-gray-600">Posted on {formattedDate}</p>
+        <header className="border-b border-gray-200 pb-6">
+          <div className="flex justify-between items-start mb-4">
+            <h1 className="text-4xl font-bold text-zinc-700">{job.title}</h1>
+            <Link
+              to={`/jobpost/edit/${job._id}`}
+              className="p-2 hover:bg-gray-100 rounded-lg transition"
+            >
+              <FiEdit size={20} className="text-blue-300" />
+            </Link>
+          </div>
+          <p className="text-sm text-gray-500 mb-4"><span className="text-blue-400">Posted on</span> {formattedDate}</p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800">
-              ${job.budget} Budget
+            <span className="px-4 py-2 rounded-lg bg-gray-50 text-black border border-gray-200 flex items-center gap-2">
+              <FiDollarSign className="text-blue-300" />
+              ${job.budget}
             </span>
-            <span className="px-3 py-1 rounded-full bg-green-100 text-green-800">
+            <span className="px-4 py-2 rounded-lg bg-gray-50 text-black border border-gray-200 flex items-center gap-2">
+              <FiBook className="text-blue-300" />
               {job.course}
             </span>
-            <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">
+            <span className="px-4 py-2 rounded-lg bg-gray-50 text-black border border-gray-200 flex items-center gap-2">
+              <FiGlobe className="text-blue-300" />
               {job.language}
             </span>
           </div>
         </header>
 
         {/* Description */}
-        <section className="space-y-2">
-          <h2 className="text-2xl font-semibold">Job Description</h2>
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold text-black">Job Description</h2>
           <p className="leading-relaxed text-gray-700">{job.description}</p>
         </section>
 
         {/* Proposals */}
         <section className="space-y-6">
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-2xl font-semibold text-black">
             Proposals ({job.applicants?.length || 0})
           </h2>
 
           {job.applicants?.length > 0 ? (
-            <ul className="space-y-6">
+            <div className="space-y-4">
               {job.applicants.map((proposal, idx) => (
-                <li key={idx} className="p-4 rounded-xl bg-gray-100">
-                  <div >
-                    <div >
-                      <div className="flex h-12 items-center  gap-5">
-                      <img className="text-sm h-8 w-8 rounded-full object-cover shadow-sm shadow-gray-200 mb-2"
-                        src={proposal.profilePic}/>
-                       <Link to={`/find-teachers/${proposal.id}`}><p className="font-semibold hover:underline cursor-pointer text-lg">
-                        {proposal.name}
-                      </p></Link>
-                        </div>
-                      <p className="text-sm mt-2 ml-5 leading-relaxed text-gray-700">
+                <div
+                  key={idx}
+                  className="p-6 rounded-xl bg-gray-50 border border-gray-200 hover:shadow-md transition"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <img
+                      className="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
+                      src={proposal.profilePic}
+                      alt={proposal.name}
+                    />
+                    <div className="flex-1">
+                      <Link to={`/find-teachers/${proposal.id}`}>
+                        <p className="font-semibold text-lg text-black hover:underline cursor-pointer">
+                          {proposal.name}
+                        </p>
+                      </Link>
+                      <p className="text-gray-700 mt-2 leading-relaxed">
                         {proposal.proposal}
                       </p>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex mt-8  gap-2 ml-6">
-                      <button onClick={()=>{interview({teacherId:proposal.id,teacherName:proposal.name,teacherProfilePic:proposal.profilePic})}}className="px-4 py-1 rounded-full underline cursor-pointer text-yellow-800 hover:bg-yellow-200 text-sm">
-                        Interview
-                      </button>
-                      <button className="px-4 py-1 rounded-full underline text-green-800 hover:bg-green-200 text-sm">
-                        Hire
-                      </button>
-                      <button onClick={()=>{notHire(proposal._id)}} className="px-4 py-1 rounded-full underline text-red-800 hover:bg-red-200 text-sm">
-                        Not Hire
-                      </button>
-                    </div>
                   </div>
-                </li>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-4 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => {
+                        interview({
+                          teacherId: proposal.id,
+                          teacherName: proposal.name,
+                          teacherProfilePic: proposal.profilePic,
+                        });
+                      }}
+                      className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition flex items-center gap-2 text-sm font-medium"
+                    >
+                      <FiMessageSquare className="text-blue-300" />
+                      Interview
+                    </button>
+                    <button className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition flex items-center gap-2 text-sm font-medium">
+                      <FiUserCheck className="text-blue-300" />
+                      Hire
+                    </button>
+                    <button
+                      onClick={() => {
+                        notHire(proposal._id);
+                      }}
+                      className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition flex items-center gap-2 text-sm font-medium"
+                    >
+                      <FiUserX />
+                      Decline
+                    </button>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
-            <p className="text-sm text-gray-600">No proposals yet.</p>
+            <p className="text-sm text-gray-500">No proposals yet.</p>
           )}
         </section>
 
         {/* Job Link */}
-        <section className="space-y-2">
-          <h2 className="text-2xl font-semibold">Job link</h2>
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold text-black">Share Job Link</h2>
           <div className="flex items-center gap-3">
-            
             <input
-              className="flex-1 rounded-lg px-3 py-2 text-sm bg-gray-100 text-gray-700"
+              className="flex-1 rounded-lg px-4 py-3 text-sm bg-gray-50 text-gray-700 border border-gray-200"
               value={`https://yourwebsite.com/jobs/${job._id}`}
               readOnly
             />
             <button
               onClick={() => {
-                navigator.clipboard.writeText(
-                  `https://yourwebsite.com/jobs/${job._id}`
-                );
+                navigator.clipboard.writeText(`https://yourwebsite.com/jobs/${job._id}`);
                 toast.success("Job link copied!");
               }}
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm"
+              className="px-4 py-3 rounded-lg bg-zinc-700 text-white hover:bg-gray-800 transition text-sm flex items-center gap-2 font-medium"
             >
+              <FiCopy />
               Copy
             </button>
           </div>
         </section>
+
+        {/* Delete Button */}
+        <div className="pt-6 border-t border-gray-200">
+          <button
+            onClick={() => {
+              handleClosePost(job._id);
+            }}
+            className="bg-blue-500 text-white font-semibold text-sm py-3 px-6 rounded-lg hover:bg-gray-800 transition flex items-center gap-2"
+          >
+            <FiTrash2 />
+            Delete Post
+          </button>
+        </div>
       </div>
-      <button onClick={()=>{handleClosePost(job._id)}} className="bg-red-700 text-white font-semibold text-lg py-2 px-3 rounded-lg mt-5 cursor-pointer">Delete</button>
     </div>
   );
 };

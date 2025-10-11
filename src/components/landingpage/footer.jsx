@@ -1,12 +1,15 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import webLogo from "../../../public/webLogo.png"
+import {Link} from "react-router-dom"
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-br from-blue-50 to-blue-100 text-blue-900 py-10 px-6 md:px-12 lg:px-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo & Security */}
         <div>
+           <Link to={"/"}>
           <img src={webLogo} alt="weblogo" className="h-6 md:h-10"/>
+        </Link>
         </div>
 
         {/* Company Info */}

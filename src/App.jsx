@@ -85,7 +85,7 @@ function App() {
               <Route path="find-teachers" element={<FindTeachers />} />
               <Route path="find-teachers/:id" element={<TeacherDetails />} />
               <Route path="messages" element={<Chat />}>
-                <Route path="/messages/:id" element={<Message />} />
+              <Route path="/messages/chat/:id" element={<Message />} />  
               </Route>
               <Route path="/jobpost" element={<MyPosts />} />
               <Route path="/jobpost/edit/:id" element={<EditPost />} />
@@ -97,7 +97,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/jobs" element={<CourseList />} />
             </Route>
-              <Route path="/videocall" element={<Videocall />} />
+              <Route path="/videocall/:videoRoom" element={<Videocall />} />
         </Route>
       </Routes>
       <ToastContainer />

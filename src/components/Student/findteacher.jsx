@@ -155,7 +155,7 @@ const FindTeachers = () => {
             key={opt.value}
             className={`px-3 py-1 border rounded-full cursor-pointer text-sm whitespace-nowrap ${
               value === opt.value
-                ? "bg-blue-900 text-white border-blue-900"
+                ? "bg-blue-200 text-indigo-900 border-zinc-200"
                 : "bg-white text-gray-700 border-gray-300"
             }`}
           >
@@ -189,9 +189,9 @@ const FindTeachers = () => {
   // view teacher profile
 
   return (
-    <div className="p-6 bg-zinc-50 min-h-screen text-blue-900 space-y-6">
-      <h1 className="text-2xl font-bold flex items-center gap-2 ">
-        <RiFindReplaceLine size={24} /> Find Teachers
+    <div className="p-6 bg-white min-h-screen text-zinc-900 space-y-6">
+      <h1 className="text-2xl font-semibold text-zinc-700 flex items-center gap-2 ">
+        <RiFindReplaceLine size={24} className="text-blue-400" /> Find Teachers
       </h1>
 
       {/* Mobile Filter Toggle */}
@@ -199,7 +199,7 @@ const FindTeachers = () => {
         className="md:hidden flex justify-between items-center bg-white p-3 rounded-xl shadow cursor-pointer"
         onClick={() => setShowFilters(!showFilters)}
       >
-        <div className="flex items-center gap-2 font-medium text-blue-900">
+        <div className="flex items-center gap-2 font-medium text-zinc-900">
           <FiFilter /> Filters
         </div>
         {showFilters ? <FiChevronUp /> : <FiChevronDown />}
@@ -307,20 +307,20 @@ const FindTeachers = () => {
           data.map((teacher) => (
           <div
   key={teacher._id}
-  className="bg-white p-5 rounded-xl relative  shadow hover:shadow-md transition flex flex-col sm:flex-row gap-4 items-start sm:items-start"
+  className="bg-white p-5 rounded-xl border border-zinc-200  relative  shadow hover:shadow-md transition flex flex-col sm:flex-row gap-4 items-start sm:items-start"
 >
   {/* Profile Picture */}
   <img
     src={teacher.persnalDetails.profilePic}
     alt={teacher.persnalDetails.name}
-    className="w-24 h-24 rounded-full object-cover  border"
+    className="w-24 h-24 rounded-full object-cover  "
   />
 
   {/* Main Info */}
-  <div className="flex-1 space-y-2">
+  <div className="flex-1  space-y-2">
     {/* Name + Verified */}
     <div className="flex items-center gap-2 flex-wrap">
-      <h2 className="text-lg font-semibold text-blue-900 truncate">
+      <h2 className="text-lg font-semibold text-zinc-700 truncate">
         {teacher.persnalDetails.name}
       </h2>
       {teacher.verified && (
@@ -338,14 +338,14 @@ const FindTeachers = () => {
       </div>
       <span className="text-gray-500">{teacher.persnalDetails.country}</span>
     </div>
-      <p className="text-sm max-h-[100px] overflow-y-auto">{teacher.profesnalDetails.bio}</p>
+      <p className="text-sm max-h-[100px] text-zinc-600 overflow-y-auto">{teacher.profesnalDetails.bio}</p>
 
     {/* Specializations */}
     <div className="flex flex-wrap gap-1">
       {teacher.profesnalDetails.specializations?.slice(0, 3).map((spec, idx) => (
         <span
           key={idx}
-          className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs"
+          className="bg-[#dbeafe] text-gray-700 px-2 py-0.5 rounded-full text-xs"
         >
           {spec}
         </span>
@@ -358,15 +358,15 @@ const FindTeachers = () => {
     {/* Compact Stats */}
     <div className="flex flex-wrap gap-4 text-sm text-gray-700 mt-1">
       <div className="flex items-center gap-1">
-        <FiDollarSign className="text-blue-900" />
+        <FiDollarSign className="text-zinc-900" />
         <span>${teacher.profesnalDetails.hourlyRate}/hr</span>
       </div>
       <div className="flex items-center gap-1">
-        <FiGlobe className="text-blue-900" />
+        <FiGlobe className="text-zinc-900" />
         <span>{teacher.persnalDetails.languageSpoken?.join(", ")}</span>
       </div>
       <div className="flex items-center gap-1">
-        <FiUsers className="text-blue-900" />
+        <FiUsers className="text-zinc-900" />
         <span>{teacher.studentsTaught || 0} students</span>
       </div>
     </div>
