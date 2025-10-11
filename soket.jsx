@@ -23,6 +23,7 @@ export const SocketProvider = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
   const [socket, setSocket] = useState(null);
 
+
   useEffect(() => {
     if (isAuthenticated && user) {
       const newSocket = io(URL, {
