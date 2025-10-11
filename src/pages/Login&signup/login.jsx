@@ -28,15 +28,15 @@ const handleonSubmit = async(e) => {
 const data=await login(email, password);
 
 if(data.success){
-  toast("Login Successfull")
+  toast.success("Login Successfull")
   dispatch(loginSuccess(data))
 }
 setLoading(false)
   }catch(e){
     setLoading(false)
-    const data=e.response.data;
+    const data=e?.response.data;
   if(!data.success){
-    toast.success(data.message)
+    toast.error(data.message)
   }else{
     setError("An error occurred during login. Please try again.");
     toast("An error occurred during login. Please try again.")
