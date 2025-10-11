@@ -4,14 +4,18 @@ import { useSelector } from "react-redux";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Loader from "../../loader";
 import defaultProfileImage from "../../../assets/images/defaultprofile.png"
+import { useQuery } from "@tanstack/react-query";
+import GetUser from "../../../services/get-user";
 
 const Chat = () => {
   const [selected, setSelected] = useState(null);
-
-  const { user, loading } = useSelector(state => state.auth);
   const location = useLocation();
-  if (loading) return <Loader />;
 
+     const propdata = JSON.parse(localStorage.getItem("user"))
+    console.log(propdata)
+    const {data,isLoading,error} = useQuery({ queryKey: ["next-chating user"], queryFn: () => GetUser(propdata) })
+    if(isLoading)return<Loader/>
+    const user=data?.data
   return (
     <div className="flex  sm:h-full  rounded-xl overflow-hidden shadow-sm border border-zinc-200">
       {/* Sidebar */}
