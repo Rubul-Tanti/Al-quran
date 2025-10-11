@@ -27,7 +27,7 @@ const Videocall = () => {
 
   const roomName =videoRoom
   const identityRef =user?.name
-  const identity = identityRef?.current||"abc"
+  const identity = identityRef?.current||"abc"+Math.random()
 
   // Connect to LiveKit
   useEffect(() => {
