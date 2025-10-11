@@ -137,7 +137,7 @@ useEffect(() => {
       </div>
 
       {/* Messages */}
-      <div onLoad={()=>{     containerRef.current = containerRef.current.scrollHeight; }} ref={containerRef} style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
+      <div  ref={containerRef} style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
     backgroundPosition: "center", }} className="flex-1 overflow-y-auto max-h-[530px] sm:max-h-full  p-2 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
         <div>{chat.map((msg, idx) => {
           const isOwn = msg.sender === user._id;
@@ -182,7 +182,7 @@ useEffect(() => {
         })}
         </div>
         <div ref={messagesEndRef}/>
-            <div className="bg-transparent sticky bottom-0 ">
+            <div className="bg-transparent  sticky bottom-0 ">
         <div className="flex items-end gap-2 max-w-4xl mx-auto">
           <div className="flex-1 flex items-center gap-2 bg-zinc-800 border border-zinc-200 rounded-full px-4 py-2 transition-all">
             <button className="flex-shrink-0 p-1.5 hover:bg-zinc-200 rounded-full transition-colors">
