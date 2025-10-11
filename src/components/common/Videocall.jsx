@@ -26,8 +26,8 @@ const Videocall = () => {
   const [remoteParticipants, setRemoteParticipants] = useState(new Map());
 
   const roomName =videoRoom
-  const identityRef =user?.name||"abc"
-  const identity = identityRef.current;
+  const identityRef =user?.name
+  const identity = identityRef?.current||"abc"
 
   // Connect to LiveKit
   useEffect(() => {
