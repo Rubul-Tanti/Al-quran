@@ -10,12 +10,12 @@ import GetUser from "../../../services/get-user";
 const Chat = () => {
   const [selected, setSelected] = useState(null);
   const location = useLocation();
-
-     const propdata = JSON.parse(localStorage.getItem("user"))
-    console.log(propdata)
-    const {data,isLoading,error} = useQuery({ queryKey: ["next-chating user"], queryFn: () => GetUser(propdata) })
-    if(isLoading)return<Loader/>
-    const user=data?.data
+const user=useSelector(state=>state.auth.user)
+    //  const propdata = JSON.parse(localStorage.getItem("user"))
+    // console.log(propdata)
+    // const {data,isLoading,error} = useQuery({ queryKey: ["next-chating user"], queryFn: () => GetUser(propdata) })
+    // if(isLoading)return<Loader/>
+    // const user=data?.data
   return (
     <div className="flex  sm:h-full  rounded-xl overflow-hidden shadow-sm border border-zinc-200">
       {/* Sidebar */}

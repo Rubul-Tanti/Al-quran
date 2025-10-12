@@ -23,7 +23,6 @@ export default function MyPosts() {
         // ✅ use POST if backend expects body
         const res = await api.post("/v1/fetchmyposts", {
           id: user._id,
-          name: user?.persnalDetails?.fullName,
         });
         setPosts(res.data.data || []);
       } catch (error) {
