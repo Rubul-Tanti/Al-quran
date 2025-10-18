@@ -18,13 +18,13 @@ const passwordRef = useRef(null);
 const handleonSubmit = async(e) => {
   e.preventDefault(); 
   try{
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    if (!email || !password) {
+      toast("Please fill in all fields");
+      return;
+    }
     setLoading(true)
-  const email = emailRef.current.value;
-  const password = passwordRef.current.value;
-  if (!email || !password) {
-    toast("Please fill in all fields");
-    return;
-  }
 const data=await login(email, password);
 
 if(data.success){
@@ -50,7 +50,7 @@ setLoading(false)
       <img
         alt="logo"
         src={webLogo}
-        className="absolute top-4 left-4 md:top-4 md:left-6 md:h-10  h-8 drop-shadow-lg z-10"
+        className="absolute sm:block hidden top-4 left-4 md:top-4 md:left-6 md:h-10  h-8 drop-shadow-lg z-10"
         />
         </Link>
 
@@ -86,6 +86,7 @@ setLoading(false)
             className="w-full mt-4 bg-gray-50 rounded-lg h-11 pl-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base"
           />
           <input
+          onKeyDown={(e)=>{e.key==="Enter"&&handleonSubmit(e)}}
           ref={passwordRef}
             type="password"
             placeholder="Password"
@@ -98,7 +99,7 @@ setLoading(false)
             </button>
           </div>
 
-          <button onClick={handleonSubmit} className="w-full py-3 rounded-lg bg-blue-900 hover:bg-blue-800 transition text-white font-semibold text-sm sm:text-base">
+          <button onClick={handleonSubmit}  className="w-full py-3 rounded-lg bg-blue-900 hover:bg-blue-800 transition text-white font-semibold text-sm sm:text-base">
                 {loading?<Loader variant="button" size="small" />:"Login"}
           </button>
 

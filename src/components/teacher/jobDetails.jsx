@@ -28,10 +28,12 @@ export default function JobDetails() {
     try {
       const res = await api.post("/v1/job/sendproposal", { postId: id, userId, username, userImage, proposal });
       if (res?.data.success) {
-        toast("Sent proposal successfully");
+        toast.success("Sent proposal successfully");
         console.log(res.data.data);
       }
+      
     } catch (e) {
+      toast.error(e?.response?.data?.message)
       console.log(e);
     }
   };

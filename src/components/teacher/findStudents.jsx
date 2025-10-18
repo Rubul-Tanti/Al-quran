@@ -3,6 +3,7 @@ import { FiBookOpen, FiBookmark, FiClock } from "react-icons/fi";
 import api from "../../utils/axios";
 import Loader from "../loader";
 import { Link, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 const CourseCard = ({ course }) => {
@@ -65,10 +66,9 @@ const CourseList = () => {
     const {page}=useParams()
     console.log(page)
     const {data,loading,error}=useQuery({queryKey:["jobPost"],queryFn:()=>fetchPosts(page)})
+    if(error){toast.error("something wend wrong")}
+    
     if(loading)return <Loader/>
-    if(error)return<p>something went wrong</p>
-    console.log(data)
-
 if (data?.allposts?.length === 0) 
   return (
     <div className="bg-white h-1/3  text-blue-900 p-4 rounded-md shadow-md text-center">

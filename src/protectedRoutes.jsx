@@ -13,7 +13,7 @@ console.log(loading,isAuthenticated,".....")
     dispatch(fetchuser());
   }, [dispatch]);
 
-  const protectedRoutes = ["/dashboard","videocall", "/messages", "/find-teachers","/jobs","/jobpost",'/mobile'];
+  const protectedRoutes = ["class-hiring","/dashboard","videocall", "/messages", "/find-teachers","/jobs","/jobpost",'/mobile'];
   // ✅ Case 1: If user is authenticated and tries login/signup/home → redirect to dashboard
   if (
     isAuthenticated &&
@@ -26,7 +26,9 @@ console.log(loading,isAuthenticated,".....")
   }
 
   // ✅ Case 2: If user is NOT authenticated but tries to access protected routes → redirect to login
-  if (!isAuthenticated && protectedRoutes.includes(location.pathname)) {
+  if (!isAuthenticated &&  protectedRoutes.some(route => 
+  location.pathname.startsWith(route)
+)) {
     console.log("pass")
   return <Navigate to="/login" state={{from:location}} replace />;
   }

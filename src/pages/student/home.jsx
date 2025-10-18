@@ -10,7 +10,7 @@ const Layoutpage = () => {
       <Header />
       <div className="flex  flex-row">
         <Sidebar />
-        <div className="overflow-hidden sm:h-[89vh] max-h-[90.5vh]  min-h-[80vh]  overflow-y-auto flex-1">
+        <div className="overflow-hidden sm:h-[calc(100vh-71px)]    h-[calc(100vh-62px)]  overflow-y-auto flex-1">
           <Outlet />
         </div>
       </div>
