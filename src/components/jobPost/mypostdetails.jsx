@@ -191,7 +191,7 @@ const MyPostDetails = () => {
                       <FiMessageSquare className="text-blue-300" />
                       Interview
                     </button>
-                    <Link to="/class-hiring-mod/1"><button className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition flex items-center gap-2 text-sm font-medium">
+                    <Link to={`/class-hiring-mod/${job._id}/${proposal._id}`}><button className="px-4 py-2 rounded-lg bg-white border border-gray-200 text-black hover:bg-gray-100 transition flex items-center gap-2 text-sm font-medium">
                       <FiUserCheck className="text-blue-300" />
                       Hire
                     </button></Link>

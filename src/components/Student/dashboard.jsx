@@ -1,5 +1,5 @@
-import React from "react";
-import { FiMessageSquare, FiStar } from "react-icons/fi";
+import React, { useEffect,useState } from "react";
+import { FiBriefcase, FiClock, FiMessageSquare, FiStar, FiX } from "react-icons/fi";
 import { BsCheckCircle } from "react-icons/bs";
 import { FaBookOpen, FaClock, FaAward } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -9,10 +9,28 @@ import { GiFinishLine } from "react-icons/gi";
 import { useQuery } from "@tanstack/react-query";
 import fetchUser from "../../services/fetchUser";
 import Loader from "../loader";
+import { fetchClasses } from "../../services/class";
 
 const StudentDashboard = () => {
   const user = useSelector((state) => state.auth.user);
+  const {data:response,isLoading,isError}=useQuery({queryKey:["classes"],queryFn:()=>fetchClasses({id:user._id,role:user.role})})
+  const [isHiring,setIsHiring]=useState([])
+  const [isOngoing,setIsGoing]=useState([])
+  const [isCompleted,setIsCompleted]=useState([])
 
+useEffect(()=>{
+  if(!isLoading){
+    const data=response.data
+    const hiring=data.filter(i=>i.status=="hiring")||[]
+    const completed=data.filter(i=>i.status=="completed")||[]
+    const ongoing=data.filter(i=>i.status=="ongoing")||[]
+    const todayClass=[]
+    setIsHiring(hiring)
+    setIsCompleted(completed)
+    setIsGoing(ongoing)
+  }
+},[response])
+if(isLoading)return<Loader/>
   return (
     <div className="p-4 md:p-6 bg-zinc-50 min-h-screen w-full">
       {/* Header */}
@@ -30,9 +48,9 @@ const StudentDashboard = () => {
           <h2 className="text-lg font-semibold text-zinc-700">Today's Classes</h2>
         </div>
 
-        {user?.ongoingCourses?.length > 0 ? (
+        {[]?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {user.ongoingCourses.map((cls, i) => (
+            {[].map((cls, i) => (
               <div
                 key={i}
                 className="bg-zinc-50 border border-zinc-200 p-4 rounded-xl hover:shadow-md transition-shadow"
@@ -71,9 +89,9 @@ const StudentDashboard = () => {
           <h2 className="text-lg font-semibold text-zinc-700">Ongoing Courses</h2>
         </div>
 
-        {user?.ongoingCourses?.length > 0 ? (
+        {isOngoing?.length > 0 ? (
           <div className="space-y-4">
-            {user.ongoingCourses.map((course, i) => (
+            {isOngoing.map((course, i) => (
               <div
                 key={i}
                 className="border border-zinc-200 rounded-xl p-4 hover:border-blue-200 transition-colors"
@@ -143,9 +161,9 @@ const StudentDashboard = () => {
           <h2 className="text-lg font-semibold text-zinc-700">Completed Courses</h2>
         </div>
 
-        {user?.completedCourse?.length > 0 ? (
+        {isCompleted.length > 0 ? (
           <div className="space-y-3">
-            {user.completedCourse.map((course, i) => (
+            {isCompleted.map((course, i) => (
               <div
                 key={i}
                 className="border border-zinc-200 p-4 rounded-lg flex justify-between items-center hover:bg-zinc-50 transition-colors"
@@ -174,7 +192,68 @@ const StudentDashboard = () => {
             <p className="text-sm text-zinc-500">No courses completed yet</p>
           </div>
         )}
+ 
       </div>
+ <div className="bg-white p-5 border border-zinc-200 rounded-xl shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-2 bg-blue-50 rounded-lg">
+            <GiFinishLine className="text-blue-400" size={20} />
+          </div>
+          <h2 className="text-lg font-semibold text-zinc-700">In Hiring Process</h2>
+        </div>
+
+             {isHiring.length > 0 ? (
+  <div className="space-y-3">
+    {isHiring.map((hiring, i) => (
+      <div
+        key={i}
+        className="border relative text-sm border-zinc-200 p-4  rounded-lg flex max-w-52 items-center hover:bg-zinc-50 transition-colors"
+      >
+        <button className="absolute right-5 top-6">check</button>
+        <div className="flex-1">
+      <div className="mb-2">
+        <p className="text-sm text-zinc-500">Student Name</p>
+        <p className="font-medium text-zinc-700">{hiring.student.name}</p>
+      </div>
+
+      <div className="mb-2">
+        <p className="text-sm text-zinc-500">Per Hour Rate</p>
+        <p className="text-xs text-zinc-700">{hiring.perHourRate}</p>
+      </div>
+
+      <div className="mb-2">
+        <p className="text-sm text-zinc-500">Subject</p>
+        <p className="text-xs text-zinc-700">{hiring.subject}</p>
+      </div>
+
+      <div className="mb-2">
+        <p className="text-sm text-zinc-500">Starting Date</p>
+        <p className="text-xs text-zinc-700">{hiring.startingDate}</p>
+      </div>
+
+      <div className="mb-2">
+        <p className="text-sm text-zinc-500">Class Time Start</p>
+        <p className="text-xs text-zinc-700">{hiring.classTime.start}</p>
+      </div>
+
+      <div>
+        <p className="text-sm text-zinc-500">Class Time End</p>
+        <p className="text-xs text-zinc-700">{hiring.classTime.end}</p>
+      </div>
+ 
+        </div>
+ 
+      </div>
+    ))}
+  </div>
+) : (
+  <div className="text-center py-8">
+    <div className="inline-flex items-center justify-center w-12 h-12 bg-zinc-100 rounded-full mb-3">
+      <FiBriefcase className="text-zinc-400" size={20} />
+    </div>
+    <p className="text-sm text-zinc-500">No hiring processes yet</p>
+  </div>
+)}</div>
     </div>
   );
 };
