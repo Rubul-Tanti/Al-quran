@@ -8,3 +8,9 @@ export const fetchClasses=async(data)=>{
     const res=await api.post('/v1/fetch-classes',data)
     return res.data
 }
+
+export const aproveClass=async(data)=>{
+    const req=await api.post('/v1/aprove-class',data)
+    return res.data
+
+}

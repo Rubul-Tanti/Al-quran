@@ -1,17 +1,19 @@
 import React, { useEffect,useState } from "react";
 import { FiBriefcase, FiClock, FiMessageSquare, FiStar, FiX } from "react-icons/fi";
 import { BsCheckCircle } from "react-icons/bs";
-import { FaBookOpen, FaClock, FaAward } from "react-icons/fa";
+import { FaBookOpen, FaClock, FaAward,FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { FaBookQuran } from "react-icons/fa6";
 import { SiConcourse } from "react-icons/si";
 import { GiFinishLine } from "react-icons/gi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import fetchUser from "../../services/fetchUser";
 import Loader from "../loader";
-import { fetchClasses } from "../../services/class";
+import { aproveClass, fetchClasses } from "../../services/class";
+import { toast } from "react-toastify";
 
 const StudentDashboard = () => {
+  const queryClient=useQueryClient()
   const user = useSelector((state) => state.auth.user);
   const {data:response,isLoading,isError}=useQuery({queryKey:["classes"],queryFn:()=>fetchClasses({id:user._id,role:user.role})})
   const [isHiring,setIsHiring]=useState([])
@@ -30,6 +32,7 @@ useEffect(()=>{
     setIsGoing(ongoing)
   }
 },[response])
+
 if(isLoading)return<Loader/>
   return (
     <div className="p-4 md:p-6 bg-zinc-50 min-h-screen w-full">
@@ -194,7 +197,7 @@ if(isLoading)return<Loader/>
         )}
  
       </div>
- <div className="bg-white p-5 border border-zinc-200 rounded-xl shadow-sm">
+ <div className="bg-white p-5 border mt-5 border-zinc-200 rounded-xl shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <div className="p-2 bg-blue-50 rounded-lg">
             <GiFinishLine className="text-blue-400" size={20} />
@@ -209,7 +212,7 @@ if(isLoading)return<Loader/>
         key={i}
         className="border relative text-sm border-zinc-200 p-4  rounded-lg flex max-w-52 items-center hover:bg-zinc-50 transition-colors"
       >
-        <button className="absolute right-5 top-6">check</button>
+  
         <div className="flex-1">
       <div className="mb-2">
         <p className="text-sm text-zinc-500">Student Name</p>
@@ -228,7 +231,7 @@ if(isLoading)return<Loader/>
 
       <div className="mb-2">
         <p className="text-sm text-zinc-500">Starting Date</p>
-        <p className="text-xs text-zinc-700">{hiring.startingDate}</p>
+        <p className="text-xs text-zinc-700">{new Date(hiring.startingDate).toLocaleDateString()}</p>
       </div>
 
       <div className="mb-2">
@@ -240,7 +243,10 @@ if(isLoading)return<Loader/>
         <p className="text-sm text-zinc-500">Class Time End</p>
         <p className="text-xs text-zinc-700">{hiring.classTime.end}</p>
       </div>
- 
+      <div className="flex items-center gap-2">
+      <button className="p-2 text-sm text-zinc-500 rounded-lg border border-zinc-200 cursor-pointer  hover:bg-black hover:text-white transition-all ease-in duration-300 flex items-center gap-2 mt-2
+      
+      "><FaEdit/>edit</button></div>
         </div>
  
       </div>
