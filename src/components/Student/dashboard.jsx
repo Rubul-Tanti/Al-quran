@@ -1,5 +1,6 @@
 import React, { useEffect,useState } from "react";
 import { FiBriefcase, FiClock, FiMessageSquare, FiStar, FiX } from "react-icons/fi";
+import { isBefore, startOfDay, differenceInDays } from "date-fns";
 import { BsCheckCircle } from "react-icons/bs";
 import { FaBookOpen, FaClock, FaAward,FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -11,7 +12,6 @@ import fetchUser from "../../services/fetchUser";
 import Loader from "../loader";
 import { aproveClass, fetchClasses } from "../../services/class";
 import { toast } from "react-toastify";
-
 const StudentDashboard = () => {
   const queryClient=useQueryClient()
   const user = useSelector((state) => state.auth.user);
@@ -34,6 +34,7 @@ useEffect(()=>{
 },[response])
 
 if(isLoading)return<Loader/>
+if(isError)return<>error</>
   return (
     <div className="p-4 md:p-6 bg-zinc-50 min-h-screen w-full">
       {/* Header */}
@@ -92,67 +93,95 @@ if(isLoading)return<Loader/>
           <h2 className="text-lg font-semibold text-zinc-700">Ongoing Courses</h2>
         </div>
 
-        {isOngoing?.length > 0 ? (
-          <div className="space-y-4">
-            {isOngoing.map((course, i) => (
-              <div
-                key={i}
-                className="border border-zinc-200 rounded-xl p-4 hover:border-blue-200 transition-colors"
-              >
-                <div className="flex flex-col lg:flex-row gap-4">
-                  {/* Course Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-zinc-700">{course.name}</h3>
-                      <span className="text-sm font-medium text-blue-500 bg-blue-50 px-3 py-1 rounded-full">
-                        {course.progress}
-                      </span>
-                    </div>
-                    
-                    <p className="text-xs text-blue-600 mb-3 inline-block bg-blue-50 px-2 py-1 rounded">
-                      Focus: {course.tajweed}
-                    </p>
-
-                    {/* Progress Bar */}
-                    <div className="w-full bg-zinc-100 rounded-full h-2">
-                      <div
-                        className="bg-blue-400 h-2 rounded-full transition-all"
-                        style={{ width: course.progress }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Teacher Info */}
-                  <div className="flex items-center gap-3 lg:border-l lg:border-zinc-200 lg:pl-4">
-                    <img
-                      src={course.img}
-                      alt={course.teacher}
-                      className="w-14 h-14 rounded-full border-2 border-zinc-200 object-cover"
-                    />
-                    <div>
-                      <p className="font-medium text-zinc-700 text-sm">{course.teacher}</p>
-                      <div className="flex items-center gap-1 text-yellow-500 text-xs mb-2">
-                        <FiStar size={14} />
-                        <span className="text-zinc-600">{course.rating}/5</span>
-                      </div>
-                      <button className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center gap-1.5 text-xs transition-colors">
-                        <FiMessageSquare size={14} />
-                        Message
-                      </button>
-                    </div>
-                  </div>
+       {isOngoing?.length > 0 ? (
+                <div className="space-y-4">
+                  {isOngoing.map((course, i) =>
+                  {
+     
+     const startDate = new Date(course.startingDate);
+     const now = new Date();
+             const hasStarted =
+       isBefore(startOfDay(startDate), startOfDay(now)) ||
+       startOfDay(startDate).getTime() === startOfDay(now).getTime();
+     
+     const daysLeft = differenceInDays(startOfDay(startDate), startOfDay(now));
+                   return<div
+                     key={i}
+                     className={`rounded-2xl p-5 transition-colors border border-zinc-50 ${
+                       hasStarted ? "bg-white" : "bg-zinc-300"
+                     }`}
+                   >
+                     <div className="flex flex-col lg:flex-row justify-between gap-6">
+                       {/* Left: Course Info */}
+                       <div className="flex-1 space-y-2">
+                        <div className="flex justify-between"> <h3 className="font-semibold text-lg text-black">
+                           {course.subject}
+                           </h3>
+                             <div
+                           className={`inline-flex items-center gap-2 text-sm mt-2 ${
+                             hasStarted
+                               ? "text-black bg-zinc-100"
+                               : "text-zinc-700 bg-zinc-50"
+                           } px-3 py-1 rounded-full`}
+                         >
+                           <FiClock size={14} />
+                           {!hasStarted&&`Will start in ${daysLeft} day${
+                                 daysLeft !== 1 ? "s" : ""
+                               }`}
+                         </div>
+     </div>
+                         <p className="text-sm text-zinc-600">
+                           <span className="font-medium">Class Time:</span>{" "}
+                           {course.classTime.start} – {course.classTime.end}
+                         </p>
+     
+                         <p className="text-sm text-zinc-600">
+                           <span className="font-medium">Days:</span>{" "}
+                           {course.classDays.join(", ")}
+                         </p>
+     
+                         <p className="text-sm text-zinc-600">
+                           <span className="font-medium">Per Hour Rate:</span> $
+                           {course.perHourRate}
+                         </p>
+     
+                         <p className="text-sm text-zinc-600">
+                           <span className="font-medium">Total Sessions:</span>{" "}
+                           {course.sessions?.length || 0}
+                         </p>
+     
+                       
+                       </div>
+     
+                       {/* Right: Teacher Info */}
+                       <div className="flex items-center gap-4">
+                         <img
+                           src={course.student.profilePic}
+                           alt={course.student.name}
+                           className="w-16 h-16 rounded-full border border-zinc-400 object-cover"
+                         />
+                         <div>
+                           <p className="font-semibold text-black text-sm">
+                             {course.student.name}
+                           </p>
+                           <button onClick={()=>{handleMessage(course.student.id)}} className="mt-2 px-3 py-1.5 bg-black text-white rounded-full flex items-center gap-1.5 text-xs hover:bg-zinc-800 transition-colors">
+                             <FiMessageSquare size={14} />
+                             Message
+                           </button>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+     })}
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-zinc-100 rounded-full mb-3">
-              <FaBookOpen className="text-zinc-400" size={20} />
-            </div>
-            <p className="text-sm text-zinc-500">No ongoing courses at the moment</p>
-          </div>
-        )}
+              ) : (
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-zinc-100 rounded-full mb-3">
+                    <FaBookOpen className="text-zinc-400" size={20} />
+                  </div>
+                  <p className="text-sm text-zinc-500">No ongoing courses at the moment</p>
+                </div>
+              )}
       </div>
 
       {/* Completed Courses */}
