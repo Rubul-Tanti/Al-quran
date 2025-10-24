@@ -125,25 +125,13 @@ useEffect(() => {
             </div>
           </div>
           
-          <div className="flex items-center gap-1">
-            <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors">
-              <svg className="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-            </button>
-            <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors">
-              <svg className="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Messages */}
       <div  ref={containerRef} style={{ backgroundImage: `url(${chatbg})`,backgroundSize: "contain",
-    backgroundPosition: "center", }} className=" overflow-y-auto max-h-[calc(100vh-140px)] sm:max-h-full  p-2 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
-        <div>{chat.map((msg, idx) => {
+    backgroundPosition: "center", }} className=" overflow-y-auto h-[calc(100vh-140px)]   p-2 md:p-6 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
+        <div className='h-full'>{chat.map((msg, idx) => {
           const isOwn = msg.sender === user._id;
           const showAvatar = idx === 0 || chat[idx - 1].sender !== msg.sender;
           
@@ -186,7 +174,7 @@ useEffect(() => {
         })}
         </div>
         <div ref={messagesEndRef}/>
-            <div className="bg-transparent  sticky bottom-0 ">
+            <div className="bg-transparent  sticky bottom-0  w-full ">
         <div className="flex items-end gap-2 max-w-4xl mx-auto">
           <div className="flex-1 flex items-center gap-2 bg-zinc-800 border border-zinc-200 rounded-full px-4 py-2 transition-all">
             <button className="flex-shrink-0 p-1.5 hover:bg-zinc-200 rounded-full transition-colors">

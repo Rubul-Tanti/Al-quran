@@ -212,8 +212,8 @@ const daysLeft = differenceInDays(startOfDay(startDate), startOfDay(now));
                     </p>
 
                     <p className="text-sm text-zinc-600">
-                      <span className="font-medium">Per Hour Rate:</span> $
-                      {course.perHourRate}
+                      <span className="font-medium">Per Month Rate:</span> $
+                      {course.perMonthRate}
                     </p>
 
                     <p className="text-sm text-zinc-600">
@@ -320,8 +320,8 @@ const daysLeft = differenceInDays(startOfDay(startDate), startOfDay(now));
        </div>
  
        <div className="mb-2">
-         <p className="text-sm text-zinc-500">Per Hour Rate</p>
-         <p className="text-xs text-zinc-700">{hiring.perHourRate}</p>
+         <p className="text-sm text-zinc-500">Per Month Rate</p>
+         <p className="text-xs text-zinc-700">{hiring.perMonthRate}</p>
        </div>
  
        <div className="mb-2">

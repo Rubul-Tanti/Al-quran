@@ -184,7 +184,7 @@ const EditPost = () => {
           {/* Budget */}
           <div>
             <label className="block text-sm font-medium text-black mb-2">
-              Hourly Rate
+             Monthly Rate
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -202,7 +202,7 @@ const EditPost = () => {
                 className="w-full pl-10 pr-24 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black outline-none transition"
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 text-sm font-medium">USD/Hour</span>
+                <span className="text-gray-500 text-sm font-medium">USD/Month</span>
               </div>
             </div>
           </div>

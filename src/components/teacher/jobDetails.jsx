@@ -173,12 +173,12 @@ export default function JobDetails() {
             <div className="space-y-3">
               <input
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 bg-gray-50"
-                value={`https://yourwebsite.com/jobs/${job._id}`}
+                value={`https://qtuor.com/jobs/${job._id}`}
                 readOnly
               />
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(`https://yourwebsite.com/jobs/${job._id}`);
+                  navigator.clipboard.writeText(`https://qtuor.com/jobs/${job._id}`);
                   toast.success("Job link copied!");
                 }}
                 className="w-full bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-2 font-medium"

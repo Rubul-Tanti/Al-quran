@@ -101,7 +101,7 @@ const MyPostDetails = () => {
       const teacher = { teacherId, teacherName, teacherProfilePic };
       const { data } = await api.post("/v1/job/initialize-chat", { teacher, student });
       if (data.success) {
-        navigate(`/messages/${data.data._id}`);
+        navigate(`/messages/chat/${data.data._id}`);
       }
     } catch (e) {
       console.log(e);
@@ -223,12 +223,12 @@ const MyPostDetails = () => {
           <div className="flex items-center gap-3">
             <input
               className="flex-1 rounded-lg px-4 py-3 text-sm bg-gray-50 text-gray-700 border border-gray-200"
-              value={`https://yourwebsite.com/jobs/${job._id}`}
+              value={`https://qtuor.com/jobs/${job._id}`}
               readOnly
             />
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`https://yourwebsite.com/jobs/${job._id}`);
+                navigator.clipboard.writeText(`https://qtuor.com/jobs/${job._id}`);
                 toast.success("Job link copied!");
               }}
               className="px-4 py-3 rounded-lg bg-zinc-700 text-white hover:bg-gray-800 transition text-sm flex items-center gap-2 font-medium"

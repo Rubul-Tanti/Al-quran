@@ -12,6 +12,7 @@ import fetchUser from "../../services/fetchUser";
 import Loader from "../loader";
 import { aproveClass, fetchClasses } from "../../services/class";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 const StudentDashboard = () => {
   const queryClient=useQueryClient()
   const user = useSelector((state) => state.auth.user);
@@ -141,8 +142,8 @@ if(isError)return<>error</>
                          </p>
      
                          <p className="text-sm text-zinc-600">
-                           <span className="font-medium">Per Hour Rate:</span> $
-                           {course.perHourRate}
+                           <span className="font-medium">Per Month Rate:</span> $
+                           {course.perMonthRate}
                          </p>
      
                          <p className="text-sm text-zinc-600">
@@ -249,8 +250,8 @@ if(isError)return<>error</>
       </div>
 
       <div className="mb-2">
-        <p className="text-sm text-zinc-500">Per Hour Rate</p>
-        <p className="text-xs text-zinc-700">{hiring.perHourRate}</p>
+        <p className="text-sm text-zinc-500">Per Month Rate</p>
+        <p className="text-xs text-zinc-700">{hiring.perMonthRate}</p>
       </div>
 
       <div className="mb-2">
@@ -273,9 +274,9 @@ if(isError)return<>error</>
         <p className="text-xs text-zinc-700">{hiring.classTime.end}</p>
       </div>
       <div className="flex items-center gap-2">
-      <button className="p-2 text-sm text-zinc-500 rounded-lg border border-zinc-200 cursor-pointer  hover:bg-black hover:text-white transition-all ease-in duration-300 flex items-center gap-2 mt-2
+      <Link to={`/class-edit-mod/${hiring._id}`} className="p-2 text-sm text-zinc-500 rounded-lg border border-zinc-200 cursor-pointer  hover:bg-black hover:text-white transition-all ease-in duration-300 flex items-center gap-2 mt-2
       
-      "><FaEdit/>edit</button></div>
+      "><FaEdit/>edit</Link></div>
         </div>
  
       </div>

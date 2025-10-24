@@ -17,19 +17,19 @@ import { toast } from 'react-toastify';
 import Loader from '../loader';
 import {createClassApi} from '../../services/class';
 
-const ClassHiringUI = () => {
-  const { jobId, proposalId } = useParams();
+const EditClass = () => {
+  const {classId} = useParams();
   const [page, setPage] = useState('details');
   const now = new Date();
 const navigate=useNavigate()
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["proposal", proposalId, jobId],
+    queryKey: ["proposal", classId],
     queryFn: async () => {
-      const res = await api.post("/v1/get-proposal-detail", { proposalId, jobId });
+      const res = await api.post("/v1/get-classDetails", {classId});
       console.log(res.data)
       return res.data;
     },
-    enabled: !!proposalId && !!jobId,
+    enabled: !!classId,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -341,4 +341,4 @@ const handleChange = (e) => {
   );
 };
 
-export default ClassHiringUI;
+export default EditClass;

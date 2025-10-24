@@ -81,7 +81,7 @@ const TeacherDetails = () => {
           </h2>
           <div className="space-y-2 text-gray-700">
             <p>
-              <strong className="text-blue-900">Hourly Rate:</strong> ${teacher?.profesnalDetails?.hourlyRate}/hour
+              <strong className="text-blue-900">Monthly Rate:</strong> ${teacher?.profesnalDetails?.MonthlyRate}/Month
             </p>
             <p>
               <strong className="text-blue-900">Education:</strong> {teacher?.profesnalDetails?.educationDetails}

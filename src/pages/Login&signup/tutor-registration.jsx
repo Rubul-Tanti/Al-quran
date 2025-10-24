@@ -35,7 +35,7 @@ const TutorRegisterForm = () => {
     rate: "",
     otp: ""
   });
-
+const [error,setError]=useState('')
   const [timeLeft, setTimeLeft] = useState(120);
   const otpRef = useRef("enter otp");
   const navigate = useNavigate();
@@ -50,6 +50,29 @@ const TutorRegisterForm = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+    
+    if (name === "dob") {
+      const today = new Date();
+      const birthDate = new Date(value);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      const dayDiff = today.getDate() - birthDate.getDate();
+
+      // Adjust if birthday hasn’t occurred yet this year
+      const actualAge =
+        monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+
+      if (actualAge < 18) {
+        setError("You must be at least 18 years old.");
+      } else {
+        setError("");
+        setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+      }
+      return
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,
@@ -293,7 +316,6 @@ const TutorRegisterForm = () => {
                     name="profilePicture"
                     onChange={handleChange}
                     accept="image/*"
-                    required
                     className="hidden"
                   />
                 </label>
@@ -357,8 +379,10 @@ const TutorRegisterForm = () => {
                     <label className="block text-sm font-medium text-zinc-700">
                       Date of Birth <span className="text-red-500">*</span>
                     </label>
+                    {error&&<p className="text-red-600 text-sm">you atleast need to be 18 year old</p>}
                     <input
                       type="date"
+                      
                       name="dob"
                       value={formData.dob}
                       onChange={handleChange}
@@ -380,8 +404,8 @@ const TutorRegisterForm = () => {
                         required
                       >
                         {countryCodes.map((c) => (
-                          <option key={c.code} value={c.dial_code}>
-                            +{c.dial_code}
+                          <option  key={c.code} value={c.dial_code}>
+                           {c.code} {c.dial_code}
                           </option>
                         ))}
                       </select>
@@ -511,7 +535,7 @@ const TutorRegisterForm = () => {
                 {/* Hourly Rate */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-zinc-700">
-                    Hourly Rate (USD) <span className="text-red-500">*</span>
+                    Monthly Rate (USD) <span className="text-red-500">*</span>
                   </label>
                   <input
                     name="rate"

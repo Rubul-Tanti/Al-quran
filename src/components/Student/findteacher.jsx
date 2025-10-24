@@ -22,116 +22,6 @@ const FindTeachers = () => {
   const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
 
-  const teachers = [
-    {
-      password: "securePass1",
-      rating: 4.8,
-      verified: true,
-      role: "teacher",
-      persnalDetails: {
-        name: "Ahmed Khan",
-        gender: "Male",
-        email: "ahmed.khan@example.com",
-        dob: "1985-03-12T00:00:00.000Z",
-        country: "Pakistan",
-        profilePic: "https://example.com/images/ahmed.jpg",
-        phone: "+923001112222",
-        languageSpoken: ["Urdu", "Arabic", "English"],
-      },
-      reviews: [
-        {
-          studentDetail: {
-            studentName: "Ali Raza",
-            studenProfilePic: "https://example.com/images/ali.jpg",
-            studentId: "650a3c6f5b3f4a12f23abcde",
-            country: "UAE",
-          },
-          rating: "5",
-          review: "Great teacher with deep knowledge of Tajweed.",
-        },
-      ],
-      profesnalDetails: {
-        profesnalEmail: "ahmed.teacher@example.com",
-        hourlyRate: "15",
-        course: [
-          {
-            studentDetail: {
-              studentName: "Ali Raza",
-              studenProfilePic: "https://example.com/images/ali.jpg",
-              studentId: "650a3c6f5b3f4a12f23abcde",
-              country: "UAE",
-            },
-            status: "ongoing",
-            courseDetail: {
-              classTime: "18:00",
-              hourlyRate: 15,
-              courseName: "Tajweed Course",
-              duration: "3 months",
-            },
-            hourlyRate: "15",
-          },
-        ],
-        cirtificates: ["https://example.com/certs/tajweed-cert.pdf"],
-        educationDetails: "Al-Azhar University Graduate in Islamic Studies",
-        bio: "Experienced Quran and Tajweed teacher with 10+ years of experience.",
-        specializations: ["Tajweed", "Quran Memorization"],
-      },
-    },
-    {
-      password: "teachPass2",
-      rating: 4.2,
-      verified: false,
-      role: "teacher",
-      persnalDetails: {
-        name: "Fatima Zahra",
-        gender: "Female",
-        email: "fatima.zahra@example.com",
-        dob: "1990-07-22T00:00:00.000Z",
-        country: "Egypt",
-        profilePic: "https://example.com/images/fatima.jpg",
-        phone: "+201001112233",
-        languageSpoken: ["Arabic", "English"],
-      },
-      reviews: [
-        {
-          studentDetail: {
-            studentName: "Sara Ahmed",
-            studenProfilePic: "https://example.com/images/sara.jpg",
-            studentId: "650a3c6f5b3f4a12f23dcbae",
-            country: "UK",
-          },
-          rating: "4",
-          review: "Very patient and explains concepts clearly.",
-        },
-      ],
-      profesnalDetails: {
-        profesnalEmail: "fatima.teacher@example.com",
-        hourlyRate: "12",
-        course: [
-          {
-            studentDetail: {
-              studentName: "Sara Ahmed",
-              studenProfilePic: "https://example.com/images/sara.jpg",
-              studentId: "650a3c6f5b3f4a12f23dcbae",
-              country: "UK",
-            },
-            status: "completed",
-            courseDetail: {
-              classTime: "15:30",
-              hourlyRate: 12,
-              courseName: "Arabic Course",
-              duration: "6 weeks",
-            },
-            hourlyRate: "12",
-          },
-        ],
-        cirtificates: ["https://example.com/certs/arabic-cert.pdf"],
-        educationDetails: "M.A. in Arabic Language from Cairo University",
-        bio: "Arabic language teacher with a passion for helping students speak fluently.",
-        specializations: ["Arabic Grammar", "Conversation Skills"],
-      },
-    },
-  ];
 
   // const filteredTeachers = data?.filter((teacher) => {
   //   // return (
@@ -359,7 +249,7 @@ const FindTeachers = () => {
     <div className="flex flex-wrap gap-4 text-sm text-gray-700 mt-1">
       <div className="flex items-center gap-1">
         <FiDollarSign className="text-zinc-900" />
-        <span>${teacher.profesnalDetails.hourlyRate}/hr</span>
+        <span>${teacher.profesnalDetails.MonthlyRate}/hr</span>
       </div>
       <div className="flex items-center gap-1">
         <FiGlobe className="text-zinc-900" />
@@ -377,7 +267,7 @@ const FindTeachers = () => {
           ))
         ) : (
           <p className="text-gray-500 text-center">
-            No teachers match your filters.
+            No teachers Found.
           </p>
         )}
       </div>
