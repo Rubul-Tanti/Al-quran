@@ -39,7 +39,6 @@ toast(e?.response?.data?.message)
 const otpHandler=async(e)=>{
   try{
 e.preventDefault()
-    console.log("pass")
     setLoading(true)
     const {email}=formData
     const otpValue=otp.current.value
@@ -52,7 +51,9 @@ e.preventDefault()
   }catch(e){
     toast("something went wrong")
   }
-    
+    finally{
+      setLoading(false)
+    }
   }
   
   const formatTime = (seconds) => {
@@ -80,7 +81,7 @@ e.preventDefault()
         )}
         <button
           onClick={otpHandler}
-          disabled={timeLeft <= 0} // disable after timer ends
+          disabled={timeLeft <= 0||loading} // disable after timer ends
           className={`w-full py-2 rounded-lg font-semibold transition-all duration-200 ${
             timeLeft <= 0
               ? "bg-gray-400 cursor-not-allowed"

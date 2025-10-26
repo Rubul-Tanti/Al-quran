@@ -29,6 +29,8 @@ import TeacherDetails from "./components/Student/teacherDetails";
 import { useEffect } from "react";
 import {SocketProvider, useSocket } from "../soket";
 import { useSelector } from "react-redux";
+import ClassHiringUI from "./components/classRoom/classHiringUi";
+import EditClass from "./components/classRoom/editClass";
 
 function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -96,8 +98,10 @@ function App() {
               <Route path="/jobs/page/:id" element={<JobDetails />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/jobs" element={<CourseList />} />
+              <Route path="class-hiring-mod/:jobId/:proposalId" element={<ClassHiringUI/>}/>
+              <Route path="class-edit-mod/:classId" element={<EditClass/>}/>
             </Route>
-              <Route path="/videocall/:videoRoom" element={<Videocall />} />
+              <Route path="/classroom/:videoRoom" element={<Videocall />} />
         </Route>
       </Routes>
       <ToastContainer />

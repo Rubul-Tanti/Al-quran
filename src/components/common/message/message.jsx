@@ -29,6 +29,7 @@ const user=useSelector(state=>state.auth.user)
         </div>
 
         {/* Chat List */}
+        {user?.chats?.length==0&&<p className="text-sm font-medium text-gray-500 text-center mt-10">No Conversation yet<br/> START CHATING</p>}
         <div className="overflow-y-auto  flex-1">
           {user?.chats?.map((contact) => (
             <Link 
