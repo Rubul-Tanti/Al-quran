@@ -144,9 +144,9 @@ useEffect(() => {
               
               <div className={`max-w-[75%] md:max-w-[60%] group ${isOwn ? "items-end" : "items-start"} flex flex-col`}>
                 <div className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all ${
-                  isOwn 
-                    ? "bg-black text-zinc-300 rounded-br-md" 
-                    : " bg-zinc-300 text-black rounded-bl-md border border-zinc-200"
+                  !isOwn 
+                    ? "bg-black text-zinc-300 rounded-bl-md" 
+                    : " bg-zinc-300 text-black rounded-br-md border border-zinc-200"
                 }`}>
                   <p className="text-sm leading-relaxed break-words">{msg.text}</p>
                 </div>

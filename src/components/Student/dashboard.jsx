@@ -12,7 +12,7 @@ import fetchUser from "../../services/fetchUser";
 import Loader from "../loader";
 import { aproveClass, fetchClasses } from "../../services/class";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const StudentDashboard = () => {
   const queryClient=useQueryClient()
   const user = useSelector((state) => state.auth.user);
@@ -20,19 +20,73 @@ const StudentDashboard = () => {
   const [isHiring,setIsHiring]=useState([])
   const [isOngoing,setIsGoing]=useState([])
   const [isCompleted,setIsCompleted]=useState([])
-
+  const [todayClass,setTodayClasses]=useState([])
+const navigate=useNavigate()
 useEffect(()=>{
   if(!isLoading){
     const data=response.data
+    const weeksDays=[
+                    'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
+                  ]
+                    const day=new Date().getDay()
+                    const today=weeksDays[day]                   
+    const todayClass=data.filter(i=>i.classDays.includes(today)&&!isBefore(new Date(),new Date(i.startingDate)))
     const hiring=data.filter(i=>i.status=="hiring")||[]
     const completed=data.filter(i=>i.status=="completed")||[]
     const ongoing=data.filter(i=>i.status=="ongoing")||[]
-    const todayClass=[]
     setIsHiring(hiring)
     setIsCompleted(completed)
     setIsGoing(ongoing)
+    setTodayClasses(todayClass)
   }
 },[response])
+const handleMessage=(teacherId
+)=>{
+  const chatRoom=user.chats.find(i=>i.id==teacherId)
+  navigate(`/messages/chat/${chatRoom.chatId}`)
+}
+function getClassStatus({ timezone = "Asia/Kolkata", start, end }) {
+  const now = new Date();
+  const currentDate = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+
+  const [startHour, startMinute] = start.split(":").map(Number);
+  const [endHour, endMinute] = end.split(":").map(Number);
+
+  const startTime = new Date(currentDate);
+  startTime.setHours(startHour, startMinute, 0, 0);
+
+  const endTime = new Date(currentDate);
+  endTime.setHours(endHour, endMinute, 0, 0);
+
+  // If end happens next day (e.g., 16:30 ➝ 06:30)
+  if (endTime <= startTime) {
+    endTime.setDate(endTime.getDate() + 1);
+  }
+
+  let status = "";
+  let timeLeft = "";
+
+  if (currentDate < startTime) {
+    status = "upcoming";
+    const diffMs = startTime - currentDate;
+    const diffMinutes = Math.floor(diffMs / 60000);
+    timeLeft = `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}`;
+  } 
+  else if (currentDate >= startTime && currentDate <= endTime) {
+    status = "running";
+    const diffMs = endTime - currentDate;
+    const diffMinutes = Math.floor(diffMs / 60000);
+    timeLeft = `${Math.floor(diffMinutes / 60)}h ${diffMinutes % 60}m left of class`;
+  } 
+  else {
+    status = "finished";
+    timeLeft = "Class is already finished";
+  }
+
+  return { status, timeLeft };
+}
+
+
 
 if(isLoading)return<Loader/>
 if(isError)return<>error</>
@@ -53,27 +107,61 @@ if(isError)return<>error</>
           <h2 className="text-lg font-semibold text-zinc-700">Today's Classes</h2>
         </div>
 
-        {[]?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[].map((cls, i) => (
-              <div
-                key={i}
-                className="bg-zinc-50 border border-zinc-200 p-4 rounded-xl hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <img
-                    src={cls.img}
-                    alt={cls.teacher}
-                    className="w-12 h-12 rounded-full border-2 border-zinc-200 object-cover"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-zinc-700 text-sm truncate">{cls.teacher}</p>
-                    <p className="text-xs text-zinc-500">{cls.time}</p>
-                  </div>
+        {todayClass?.length > 0 ? (
+          <div className="flex flex-row">
+          <div className="space-y-4">
+                  {todayClass.map((course, i) =>
+                  { 
+                    const session =course.sessions?.find(s=>s.date== new Date().toLocaleDateString())
+     return<div
+                     key={i}
+                     className={`rounded-2xl flex-1 p-5 transition-colors border border-zinc-50 ${
+                       getClassStatus(course.classTime).status!=='finished'? "bg-white" : "bg-zinc-300"
+                     }`}
+                   >
+                     <div className="flex flex-col  justify-between gap-6">
+                       {/* Left: Course Info */}
+                       <div className="flex-1 space-y-2">
+                        <div className="flex justify-between"> <h3 className="font-semibold text-lg text-black">
+                           {course.subject}
+                           </h3>{getClassStatus(course.classTime).status=="upcoming"&&<h2 className="text-green-700 mx-3">class starts in:: <span className="text-zinc-700 text-sm">{getClassStatus(course.classTime).timeLeft} </span></h2>}
+                             <div
+                           className={`inline-flex items-center gap-2 text-sm mt-2 bg-zinc-50 px-3 py-1 rounded-full`}
+                         >
+                          
+                         </div>
+     </div>
+                         <p className="text-sm text-zinc-600">
+                           <span className="font-medium">Class Time:</span>{" "}
+                           {course.classTime.start} – {course.classTime.end}
+                         </p>
+                       </div>
+                      {getClassStatus(course.classTime).status=="running"&&<div className="text-zinc-600">Your class Room is live:<br/><button className="border border-green-500 text-green-500 rounded-lg p-1 hover:bg-green-500 hover:text-white transition-all duration-300 ease-in cursor-pointer hover:shadow-gray-400 shadow-xl m-1" onClick={()=>{navigate(`/classroom/{${course._id}}`)}}>Join Class</button>
+                      { 
+                      session?.attendance?.teacherPresent&&<div className="text-red-800">teacher is in the class Room</div>}
+                       </div>}
+     
+                       {/* Right: Teacher Info */}
+                       <div className="flex items-center gap-4">
+                         <img
+                           src={course.teacher.profilePic}
+                           alt={course.teacher.name}
+                           className="w-16 h-16 rounded-full border border-zinc-400 object-cover"
+                         />
+                         <div>
+                           <p className="font-semibold text-black text-sm">
+                             {course.teacher.name}
+                           </p>
+                           <button onClick={()=>{handleMessage(course.teacher.id)}} className="mt-2 px-3 py-1.5 bg-black text-white rounded-full flex items-center gap-1.5 text-xs hover:bg-zinc-800 transition-colors">
+                             <FiMessageSquare size={14} />
+                             Message
+                           </button>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+     })}
                 </div>
-                <p className="text-sm text-zinc-600 font-medium truncate">{cls.name}</p>
-              </div>
-            ))}
           </div>
         ) : (
           <div className="text-center py-8">
@@ -95,6 +183,7 @@ if(isError)return<>error</>
         </div>
 
        {isOngoing?.length > 0 ? (
+        <div className="flex">
                 <div className="space-y-4">
                   {isOngoing.map((course, i) =>
                   {
@@ -108,11 +197,11 @@ if(isError)return<>error</>
      const daysLeft = differenceInDays(startOfDay(startDate), startOfDay(now));
                    return<div
                      key={i}
-                     className={`rounded-2xl p-5 transition-colors border border-zinc-50 ${
+                     className={`rounded-2xl  p-5 transition-colors border border-zinc-50 ${
                        hasStarted ? "bg-white" : "bg-zinc-300"
                      }`}
                    >
-                     <div className="flex flex-col lg:flex-row justify-between gap-6">
+                     <div className="flex flex-col  justify-between gap-6">
                        {/* Left: Course Info */}
                        <div className="flex-1 space-y-2">
                         <div className="flex justify-between"> <h3 className="font-semibold text-lg text-black">
@@ -125,10 +214,10 @@ if(isError)return<>error</>
                                : "text-zinc-700 bg-zinc-50"
                            } px-3 py-1 rounded-full`}
                          >
-                           <FiClock size={14} />
-                           {!hasStarted&&`Will start in ${daysLeft} day${
+                          
+                           {!hasStarted&&<> <FiClock size={14} />{ `Will start in ${daysLeft} day${
                                  daysLeft !== 1 ? "s" : ""
-                               }`}
+                               }`}</>}
                          </div>
      </div>
                          <p className="text-sm text-zinc-600">
@@ -157,15 +246,15 @@ if(isError)return<>error</>
                        {/* Right: Teacher Info */}
                        <div className="flex items-center gap-4">
                          <img
-                           src={course.student.profilePic}
-                           alt={course.student.name}
+                           src={course.teacher.profilePic}
+                           alt={course.teacher.name}
                            className="w-16 h-16 rounded-full border border-zinc-400 object-cover"
                          />
                          <div>
                            <p className="font-semibold text-black text-sm">
-                             {course.student.name}
+                             {course.teacher.name}
                            </p>
-                           <button onClick={()=>{handleMessage(course.student.id)}} className="mt-2 px-3 py-1.5 bg-black text-white rounded-full flex items-center gap-1.5 text-xs hover:bg-zinc-800 transition-colors">
+                           <button onClick={()=>{handleMessage(course.teacher.id)}} className="mt-2 px-3 py-1.5 bg-black text-white rounded-full flex items-center gap-1.5 text-xs hover:bg-zinc-800 transition-colors">
                              <FiMessageSquare size={14} />
                              Message
                            </button>
@@ -174,6 +263,7 @@ if(isError)return<>error</>
                      </div>
                    </div>
      })}
+                </div>
                 </div>
               ) : (
                 <div className="text-center py-8">

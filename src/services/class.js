@@ -10,7 +10,11 @@ export const fetchClasses=async(data)=>{
 }
 
 export const aproveClass=async(data)=>{
-    const req=await api.post('/v1/aprove-class',data)
+    const res=await api.post('/v1/aprove-class',data)
     return res.data
 
+}
+export const updateClassApi=async(data)=>{
+    const res=await api.post("/v1/hire/update-class",data)
+    return res.data
 }

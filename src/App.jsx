@@ -101,7 +101,7 @@ function App() {
               <Route path="class-hiring-mod/:jobId/:proposalId" element={<ClassHiringUI/>}/>
               <Route path="class-edit-mod/:classId" element={<EditClass/>}/>
             </Route>
-              <Route path="/videocall/:videoRoom" element={<Videocall />} />
+              <Route path="/classroom/:videoRoom" element={<Videocall />} />
         </Route>
       </Routes>
       <ToastContainer />

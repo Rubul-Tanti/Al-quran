@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../../utils/axios';
 import { toast } from 'react-toastify';
 import Loader from '../loader';
-import {createClassApi} from '../../services/class';
+import {updateClassApi} from '../../services/class';
 
 const EditClass = () => {
   const {classId} = useParams();
@@ -26,7 +26,6 @@ const navigate=useNavigate()
     queryKey: ["proposal", classId],
     queryFn: async () => {
       const res = await api.post("/v1/get-classDetails", {classId});
-      console.log(res.data)
       return res.data;
     },
     enabled: !!classId,
@@ -39,7 +38,7 @@ const navigate=useNavigate()
     studentName: '',
     subject: '',
     perMonthRate: '',
-    startingDate: now,
+    startingDate:now,
     teacherName: '',
   });
 
@@ -56,12 +55,12 @@ const navigate=useNavigate()
   useEffect(() => {
     if (data?.data) {
       const initialData = {
-        classDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        classTime: { start: '09:00', end: '10:00' },
+        classDays:data?.data?.classDays,
+        classTime: { start:data?.data?.classTime.start, end:data?.data?.classTime.end },
         studentName: data?.data?.student?.name || '',
         subject: data?.data?.subject || '',
         perMonthRate: data?.data?.perMonthRate || '',
-        startingDate:now,
+        startingDate:new Date(data.data.startingDate),
         teacherName: data?.data?.teacher?.name || '',
       };
       setProposal(initialData);
@@ -109,16 +108,10 @@ const handleChange = (e) => {
 
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-  const createClass = async () => {
+  const updateClass = async () => {
     try {
-      const response = await createClassApi({
-        jobId,proposalId,
-        studentId: data?.data?.student?.id,
-        studentName: data?.data?.student?.name,
-        studentProfilePic: data?.data?.student?.profilePic,
-        teacherId: data?.data?.teacher?.id,
-        teacherName: data?.data?.teacher?.name,
-        teacherProfilePic: data?.data?.teacher?.profilePic,
+      const response = await updateClassApi({
+        classId,
         classDays: finalProposal.classDays,
         classTime: finalProposal.classTime,
         subject: finalProposal.subject,
@@ -126,11 +119,11 @@ const handleChange = (e) => {
         startingDate: finalProposal.startingDate,
       });
       if (response.success) {
-        toast.success("Class created successfully");
+        toast.success("Class updated successfully");
         navigate("/dashboard")
       }
     } catch (e) {
-      toast.error("Failed to create class");
+      toast.error("Failed to update class");
     }
   };
 
@@ -142,8 +135,8 @@ const handleChange = (e) => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black mb-2">Class Hiring Process</h1>
-          <p className="text-gray-600">Follow the steps to complete your class booking</p>
+          <h1 className="text-3xl font-bold text-black mb-2">Class Editing Process</h1>
+          <p className="text-gray-600">Follow the steps to edit your class booking</p>
           <p className='text-red-600 text-sm'>*make sure to edit all fields before creating a class*</p>
         </div>
 
@@ -232,7 +225,6 @@ const handleChange = (e) => {
                     id="startingDate"
                     className="border-zinc-400 border text-zinc-500 outline-0 rounded-lg p-2 w-full"
                     onChange={handleChange}
-                    value={Proposal.startingDate.toLocaleDateString()}
                     type="date"
                   />
                 </div>
@@ -327,11 +319,11 @@ const handleChange = (e) => {
                 Edit
               </button>
               <button
-                onClick={createClass}
+                onClick={updateClass}
                 className="flex-1 bg-blue-400 hover:bg-blue-500 text-white font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <CheckCircle className="w-5 h-5" />
-                Create Class
+                Update Class
               </button>
             </div>
           </div>
