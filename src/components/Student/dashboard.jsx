@@ -91,7 +91,7 @@ function getClassStatus({ timezone = "Asia/Kolkata", start, end }) {
 if(isLoading)return<Loader/>
 if(isError)return<>error</>
   return (
-    <div className="p-4 md:p-6 bg-zinc-50 min-h-screen w-full">
+    <div className="p-4 md:p-6 bg-zinc-50  min-h-screen w-full">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-zinc-700">Quran Learning Dashboard</h1>
@@ -115,7 +115,7 @@ if(isError)return<>error</>
                     const session =course.sessions?.find(s=>s.date== new Date().toLocaleDateString())
      return<div
                      key={i}
-                     className={`rounded-2xl flex-1 p-5 transition-colors border border-zinc-50 ${
+                     className={`rounded-2xl flex-1 p-5 transition-colors border border-zinc-200 mx-2 ${
                        getClassStatus(course.classTime).status!=='finished'? "bg-white" : "bg-zinc-300"
                      }`}
                    >
@@ -136,7 +136,7 @@ if(isError)return<>error</>
                            {course.classTime.start} – {course.classTime.end}
                          </p>
                        </div>
-                      {getClassStatus(course.classTime).status=="running"&&<div className="text-zinc-600">Your class Room is live:<br/><button className="border border-green-500 text-green-500 rounded-lg p-1 hover:bg-green-500 hover:text-white transition-all duration-300 ease-in cursor-pointer hover:shadow-gray-400 shadow-xl m-1" onClick={()=>{navigate(`/classroom/{${course._id}}`)}}>Join Class</button>
+                      {getClassStatus(course.classTime).status=="running"&&<div className="text-zinc-600">Your class Room is live:<br/><button className="border border-green-500 text-green-500 rounded-lg p-1 hover:bg-green-500 hover:text-white transition-all duration-300 ease-in cursor-pointer hover:shadow-gray-400 shadow-xl m-1 font-bold" onClick={()=>{navigate(`/classroom/${course._id}`)}}>Join Class</button>
                       { 
                       session?.attendance?.teacherPresent&&<div className="text-red-800">teacher is in the class Room</div>}
                        </div>}
@@ -197,7 +197,7 @@ if(isError)return<>error</>
      const daysLeft = differenceInDays(startOfDay(startDate), startOfDay(now));
                    return<div
                      key={i}
-                     className={`rounded-2xl  p-5 transition-colors border border-zinc-50 ${
+                     className={`rounded-2xl  p-5 transition-colors border border-zinc-200 ${
                        hasStarted ? "bg-white" : "bg-zinc-300"
                      }`}
                    >

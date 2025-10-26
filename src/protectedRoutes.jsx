@@ -13,7 +13,7 @@ console.log(loading,isAuthenticated,".....")
     dispatch(fetchuser());
   }, [dispatch]);
 
-  const protectedRoutes = ["class-hiring","/dashboard","videocall", "/messages", "/find-teachers","/jobs","/jobpost",'/mobile'];
+  const protectedRoutes = ["class-hiring","/dashboard","videocall", "/messages", "/find-teachers","/jobs","/jobpost",'/mobile','/classroom'];
   // ✅ Case 1: If user is authenticated and tries login/signup/home → redirect to dashboard
   if (
     isAuthenticated &&

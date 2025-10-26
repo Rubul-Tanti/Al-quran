@@ -7,10 +7,10 @@ import { Room } from "livekit-client";
 import api from "../../utils/axios";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loader from "../loader";
 
 const Videocall = () => {
   const user=useSelector(state=>state.auth.user)
-
   const {videoRoom}=useParams()
 
   const localVideoRef = useRef(null);
@@ -24,10 +24,8 @@ const Videocall = () => {
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const [remoteParticipants, setRemoteParticipants] = useState(new Map());
-
   const roomName =videoRoom
-  const identityRef =user?.name||"abc"
-  const identity = identityRef.current;
+
 
   // Connect to LiveKit
   useEffect(() => {
@@ -36,9 +34,11 @@ const Videocall = () => {
     const connectToRoom = async () => {
       try {
         setConnectionStatus("Connecting...");
+        if(user){ 
+          const identity=user._id
         console.log("Requesting token for room:", roomName, "identity:", identity);
         
-        const res = await api.post(`/v1/livekit/token`, { identity, roomName });
+        const res = await api.post(`/v1/livekit/token`, { identity, roomName,role:user.role });
         const { token, url } = res.data;
         
         console.log("Token received, connecting to:", url);
@@ -154,7 +154,7 @@ const Videocall = () => {
             }
           });
         });
-
+      }
       } catch (err) {
         console.error("Error connecting to LiveKit:", err);
         setConnectionStatus("Connection Failed");
@@ -282,14 +282,13 @@ const Videocall = () => {
       toast.error("Failed to send message");
     }
   };
-
   return (
     <div className="flex flex-col md:flex-row h-screen items-center">
       {/* Main video + participants */}
-      <div className="bg-blue-50 p-3 md:p-5 flex flex-col md:flex-row gap-5 w-full md:w-[80%] h-[80vh] md:h-screen">
+      <div className="bg-zinc-50 p-3 md:p-5 flex flex-col md:flex-row gap-5 w-full md:w-[80%] h-[80vh] md:h-screen">
         
         {/* Video Section */}
-        <div className="relative w-full md:w-5/6 h-[50vh] md:h-full">
+        <div className="relative  w-full md:w-5/6 h-[50vh] md:h-full">
           {/* Connection status */}
           <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded z-50 text-xs sm:text-sm">
             {connectionStatus}
@@ -344,7 +343,7 @@ const Videocall = () => {
           {/* Remote video container - Changed from <video> to <div> */}
           <div
             ref={remoteVideosContainerRef}
-            className="w-full h-full rounded-xl border bg-gray-200 relative overflow-hidden"
+            className="w-full h-full rounded-xl  bg-gray-200 relative overflow-hidden"
           >
             {remoteParticipants.size === 0 && (
               <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
